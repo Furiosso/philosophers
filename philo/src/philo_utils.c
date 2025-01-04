@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/04 13:51:50 by dagimeno          #+#    #+#             */
+/*   Updated: 2025/01/04 13:51:55 by dagimeno         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/philo.h"
 
 static int	ft_isnumber(char *str);
@@ -17,7 +29,7 @@ int	check_args(int argc, char **argv)
 		if (!ft_isnumber(argv[i]))
 		{
 			write (2, "Error:\n", 7);
-			write (2, "Only positive numerical characters allowed\n", 43);
+			write (2, "Only positive numbers allowed\n", 30);
 			return (2);
 		}
 	}

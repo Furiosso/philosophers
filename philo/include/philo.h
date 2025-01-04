@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/04 13:50:56 by dagimeno          #+#    #+#             */
+/*   Updated: 2025/01/04 21:30:38 by dagimeno         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef PHILO_H
 # define PHILO_H
 # include <stdio.h>
@@ -35,6 +47,7 @@ t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, int i);
 int			ft_atoi(const char *str);
 void		*ft_calloc(size_t count, size_t size);
 int			ft_isdigit(int c);
+long		get_time(void);
 //int			initialize_threads(char **argv, t_philosophers **params, pthread_mutex_t *forks);
 //void		join_threads(t_philosophers *params, int number_of_philosophers);
 void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
