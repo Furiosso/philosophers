@@ -30,11 +30,14 @@ typedef struct s_philosophers
 	//pthread_t		*tphilos;
 	//t_philo			*philosopher;
 	int				id;
+	pthread_t		*thread;
+	long			start_time;
 	long			last_meal;
 	//pthread_mutex_t	*fmutex;
 	//int				forks;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
+	char			is_locked;
 	int				number_of_philosophers;
 	int				time_to_die;
 	int				time_to_eat;
@@ -43,7 +46,9 @@ typedef struct s_philosophers
 }	t_philosophers;
 
 int			check_args(int argc, char **argv);
-t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, int i);
+//void		*check_death(void *arg);
+long		get_time(void);
+t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, pthread_t *thread, int i);
 int			ft_atoi(const char *str);
 void		*ft_calloc(size_t count, size_t size);
 int			ft_isdigit(int c);
@@ -51,6 +56,7 @@ long		get_time(void);
 //int			initialize_threads(char **argv, t_philosophers **params, pthread_mutex_t *forks);
 //void		join_threads(t_philosophers *params, int number_of_philosophers);
 void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
+//char		lock_forks(t_philosophers *philosopher);
 void		*routine(void *arg);
 void		unlock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork);
 

@@ -12,7 +12,8 @@
 
 #include "../include/philo.h"
 
-t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, int i)
+//t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, int i);
+t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, pthread_t *thread, int i)
 {
 	t_philosophers	philosopher;
 	int				loops;
@@ -22,6 +23,8 @@ t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, int i)
 	//	return (NULL);
 	philosopher.number_of_philosophers = ft_atoi(argv[1]);
 	philosopher.id = i + 1;
+	philosopher.thread = thread;
+	philosopher.is_locked = 0;
 	philosopher.left_fork = &forks[i];
 	if (philosopher.id == philosopher.number_of_philosophers)
 		philosopher.right_fork = &forks[0];
@@ -35,5 +38,6 @@ t_philosophers	fill_params(char **argv, pthread_mutex_t *forks, int i)
 		loops = ft_atoi(argv[5]);
 		philosopher.number_of_times_each_philosopher_must_eat = loops;
 	}
+	philosopher.start_time = get_time();
 	return (philosopher);
 }
