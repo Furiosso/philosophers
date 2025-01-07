@@ -92,6 +92,8 @@ pthread_t	*initialize_threads(char **argv, t_philosophers *philosophers, pthread
 		philosophers[i] = fill_params(argv, forks, &threads[i], i);
 		//printf("Thread address before created: %p\n", &threads[i]);
 		//printf("Before creating thread: %d\n", philosophers[i].id);
+		if (philosophers[i].id % 2 == 0)
+			usleep(500);
 		if (pthread_create(&threads[i], NULL, &routine, &philosophers[i]) != 0)
 			return (NULL);
 		//printf("Thread address after created: %p\n", &threads[i]);

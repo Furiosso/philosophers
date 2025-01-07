@@ -61,7 +61,18 @@ static int	cycle(t_philosophers *philosopher)
 	//pthread_t		thread;
 
 	if (think(philosopher))
+	{
+		pthread_mutex_unlock(philosopher->left_fork);
+		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
 		return (0);
+	}
+	if (philosopher->number_of_philosophers == 1)
+	{
+		pthread_mutex_unlock(philosopher->left_fork);
+		usleep(philosopher->time_to_die * 1000);
+		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
+		return (0);
+	}
 	//think(philosopher);
 	//lock_forks(philosopher->left_fork, philosopher->right_fork, philosopher->id);
 	timer = get_time();
@@ -89,7 +100,7 @@ static int	cycle(t_philosophers *philosopher)
 	printf ("%ld %d is sleeping\n", timer, philosopher->id);
 	if (philosopher->time_to_eat + philosopher->time_to_sleep >= philosopher->time_to_die)
 	{
-		usleep((philosopher->time_to_sleep - philosopher->time_to_eat) * 1000);
+		usleep((philosopher->time_to_die - philosopher->time_to_eat) * 1000);
 		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
 		return (0);
 	}
@@ -108,17 +119,27 @@ static char	think(t_philosophers *philosopher)
 	long	timer;
 
 	timer = get_time();
-	if (timer - philosopher->last_meal >= philosopher->time_to_die)
-	{
-		printf("%ld %d died\n", timer, philosopher->id);
-		return (1);
-	}
+	//if (timer - philosopher->last_meal >= philosopher->time_to_die)
+	//{
+	//	printf("%ld %d died\n", timer, philosopher->id);
+	//	return (1);
+	//}
 	printf("%ld %d is thinking\n", timer - philosopher->start_time, philosopher->id);
 	pthread_mutex_lock(philosopher->left_fork);
-	philosopher->is_locked = 1;
+	//philosopher->is_locked = 1;
 	timer = get_time() - philosopher->start_time;
 	//gettimeofday(&fork_time, NULL);
 	printf("%ld %d has taken a fork\n", timer, philosopher->id);
+	if (philosopher->number_of_philosophers == 1)
+	{
+		usleep(philosopher->time_to_die * 1000);
+		return (1);
+	}
+	if (philosopher->time_to_eat * 2 >= philosopher->time_to_die && philosopher->number_of_philosophers % 2 == 1 && philosopher->id == philosopher->number_of_philosophers - 1)
+	{
+		usleep(philosopher->time_to_eat * 2 * 1000);
+		return (1);
+	}
 	//printf("Fork: %p\n", (void *)left_fork);
 	//if (lock_forks(philosopher))
 		//return (1);
