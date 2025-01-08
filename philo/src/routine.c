@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/04 20:30:10 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/08 20:28:28 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static char	think(t_philosophers *philosopher);
 void	*routine(void *arg)
 {
 	t_philosophers	philosopher;
-	char			is_dead;
+	//char			is_dead;
 	//pthread_t		thread;
 	//struct timeval	last_meal;
 
@@ -32,24 +32,26 @@ void	*routine(void *arg)
 	//printf("%ld last meal\n", last_meal.tv_usec);
 	//philosopher.last_meal = last_meal.tv_usec / 1000;
 	//printf("%ld %d is thinking\n", philosopher.last_meal, philosopher.id);
-	is_dead = 0;
+	//is_dead = 0;
 	if (!philosopher.number_of_times_each_philosopher_must_eat)
 	{
-		while (!is_dead)
+		while (1)
 		{
-			is_dead = cycle(&philosopher);
+			//is_dead = cycle(&philosopher);
 			//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
-			//	return (0);
+			if (!cycle(&philosopher))
+				return (NULL);
 			//if (pthread_join(thread, NULL) != 0)
 			//	return (0);
 		}
 		return (NULL);
 	}
-	while (philosopher.number_of_times_each_philosopher_must_eat-- && !is_dead)
+	while (philosopher.number_of_times_each_philosopher_must_eat--)
 	{
 		//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
 		//	return (0);
-		is_dead = cycle(&philosopher);
+		if (!cycle(&philosopher))
+			return (NULL);
 		//if (!cycle(&philosopher))
 			//return (NULL);
 		//if (pthread_join(thread, NULL) != 0)
@@ -64,7 +66,7 @@ static int	cycle(t_philosophers *philosopher)
 	//pthread_t		thread;
 
 	if (think(philosopher))
-		return (1);
+		return (0);
 	//lock_forks(philosopher->left_fork, philosopher->right_fork, philosopher->id);
 	timer = get_time();
 	/*gettimeofday(&timer, NULL);
@@ -78,9 +80,10 @@ static int	cycle(t_philosophers *philosopher)
 	printf ("%ld %d is eating\n", timer - philosopher->start_time, philosopher->id);
 	if (philosopher->time_to_eat >= philosopher->time_to_die)
 	{
+		unlock_forks(philosopher->left_fork, philosopher->right_fork);
 		usleep(philosopher->time_to_die * 1000);
 		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
-		return (1);
+		return (0);
 	}
 	//printf("last meal in cycle: %ld\n", philosopher->last_meal);
 	//printf("%ld timer\n", timer.tv_usec);
@@ -93,7 +96,7 @@ static int	cycle(t_philosophers *philosopher)
 	{
 		usleep((philosopher->time_to_die - philosopher->time_to_eat) * 1000);
 		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
-		return (1);
+		return (0);
 	}
 	//gettimeofday(&timer, NULL);
 	//printf("%ld timer\n", timer.tv_usec);
@@ -102,7 +105,14 @@ static int	cycle(t_philosophers *philosopher)
 	//gettimeofday(&timer, NULL);
 //	printf("%ld timer\n", timer.tv_usec);
 	//printf ("%ld %d is thinking\n", timer, philosopher->id);
-	return (0);
+	if (philosopher->time_to_eat > philosopher->time_to_sleep)
+	{
+		printf("%ld %d is thinking\n", get_time() - philosopher->start_time, philosopher->id);
+		usleep(philosopher->time_to_die - (philosopher->time_to_eat + philosopher->time_to_sleep));
+		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
+			return (0);
+	}
+	return (1);
 }
 
 static char	think(t_philosophers *philosopher)
@@ -119,8 +129,7 @@ static char	think(t_philosophers *philosopher)
 	if (philosopher->number_of_philosophers == 1 ||
 		(philosopher->time_to_eat * 2 >= philosopher->time_to_die && philosopher->number_of_philosophers % 2 == 1 && philosopher->id == philosopher->number_of_philosophers - 1))
 	{
-		if (philosopher->number_of_philosophers == 1)
-			printf("%ld %d has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
+		printf("%ld %d has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
 		usleep(philosopher->time_to_die * 1000);
 		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
 		return (1);

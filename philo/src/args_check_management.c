@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philo_utils.c                                      :+:      :+:    :+:   */
+/*   args_check_management.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:51:50 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/04 13:51:55 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/08 20:16:26 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,12 @@ int	check_args(int argc, char **argv)
 			write (2, "Only positive numbers allowed\n", 30);
 			return (2);
 		}
+		if (ft_atoi(argv[i]) == 0)
+		{
+			write(2, "Error\n", 7);
+			write (2, "Null arguments not allowed\n", 27);
+			return (3);
+		}
 	}
 	return (0);
 }
@@ -41,7 +47,7 @@ static int	ft_isnumber(char *str)
 	int		i;
 
 	i = 0;
-	while (str[i] == ' ')
+	while (str[i] == ' ' || (*str > 8 && *str < 14))
 		i++;
 	if (str[i] == '+')
 	{
@@ -52,7 +58,7 @@ static int	ft_isnumber(char *str)
 		i++;
 	while (str[i])
 	{
-		if (str[i++] != ' ')
+		if (str[i++] != ' ' && (*str < 8 && *str > 14))
 			return (0);
 	}
 	return (1);
