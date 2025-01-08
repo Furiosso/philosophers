@@ -61,19 +61,7 @@ static int	cycle(t_philosophers *philosopher)
 	//pthread_t		thread;
 
 	if (think(philosopher))
-	{
-		pthread_mutex_unlock(philosopher->left_fork);
-		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
 		return (0);
-	}
-	if (philosopher->number_of_philosophers == 1)
-	{
-		pthread_mutex_unlock(philosopher->left_fork);
-		usleep(philosopher->time_to_die * 1000);
-		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
-		return (0);
-	}
-	//think(philosopher);
 	//lock_forks(philosopher->left_fork, philosopher->right_fork, philosopher->id);
 	timer = get_time();
 	/*gettimeofday(&timer, NULL);
@@ -130,14 +118,12 @@ static char	think(t_philosophers *philosopher)
 	timer = get_time() - philosopher->start_time;
 	//gettimeofday(&fork_time, NULL);
 	printf("%ld %d has taken a fork\n", timer, philosopher->id);
-	if (philosopher->number_of_philosophers == 1)
+	if (philosopher->number_of_philosophers == 1 ||
+		(philosopher->time_to_eat * 2 >= philosopher->time_to_die && philosopher->number_of_philosophers % 2 == 1 && philosopher->id == philosopher->number_of_philosophers - 1))
 	{
+		pthread_mutex_unlock(philosopher->left_fork);
 		usleep(philosopher->time_to_die * 1000);
-		return (1);
-	}
-	if (philosopher->time_to_eat * 2 >= philosopher->time_to_die && philosopher->number_of_philosophers % 2 == 1 && philosopher->id == philosopher->number_of_philosophers - 1)
-	{
-		usleep(philosopher->time_to_eat * 2 * 1000);
+		printf("%ld %d died\n", get_time() - philosopher->start_time, philosopher->id);
 		return (1);
 	}
 	//printf("Fork: %p\n", (void *)left_fork);
