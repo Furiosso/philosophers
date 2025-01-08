@@ -45,13 +45,14 @@ static int	ft_isnumber(char *str)
 		i++;
 	if (str[i] == '+')
 	{
-		i++;
-		if (!str[i])
+		if (!str[++i])
 			return (0);
 	}
+	while (ft_isdigit(str[i]))
+		i++;
 	while (str[i])
 	{
-		if (!ft_isdigit(str[i++]))
+		if (str[i++] != ' ')
 			return (0);
 	}
 	return (1);
