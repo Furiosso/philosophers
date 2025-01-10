@@ -6,23 +6,23 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/08 20:28:28 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/10 21:34:09 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-
-static int	cycle(t_philosophers *philosopher);
-static char	think(t_philosophers *philosopher);
+/*
+static int	cycle(t_philos *philosopher);
+static char	think(t_philos *philosopher);
 
 void	*routine(void *arg)
 {
-	t_philosophers	philosopher;
+	t_philos	philosopher;
 	//char			is_dead;
 	//pthread_t		thread;
 	//struct timeval	last_meal;
 
-	philosopher = *(t_philosophers *)arg;
+	philosopher = *(t_philos *)arg;
 	//printf("Thread address in the thread: %p\n", philosopher.thread);
 	//printf("In the thread: %d\n", philosopher.id);
 	//philosopher.last_meal = get_time();
@@ -60,7 +60,7 @@ void	*routine(void *arg)
 	return (NULL);
 }
 
-static int	cycle(t_philosophers *philosopher)
+static int	cycle(t_philos *philosopher)
 {
 	long	timer;
 	//pthread_t		thread;
@@ -69,14 +69,14 @@ static int	cycle(t_philosophers *philosopher)
 		return (0);
 	//lock_forks(philosopher->left_fork, philosopher->right_fork, philosopher->id);
 	timer = get_time();
-	/*gettimeofday(&timer, NULL);
+	gettimeofday(&timer, NULL);
 	if (timer.tv_usec / 1000 - philosopher->last_meal > philosopher->time_to_die)
 	{
 		printf ("%ld %d died\n", timer.tv_usec / 1000, philosopher->id);
 		unlock_forks(philosopher->left_fork, philosopher->right_fork);
 		return (0);
 	}*/
-	philosopher->last_meal = timer;
+/*	philosopher->last_meal = timer;
 	printf ("%ld %d is eating\n", timer - philosopher->start_time, philosopher->id);
 	if (philosopher->time_to_eat >= philosopher->time_to_die)
 	{
@@ -115,7 +115,7 @@ static int	cycle(t_philosophers *philosopher)
 	return (1);
 }
 
-static char	think(t_philosophers *philosopher)
+static char	think(t_philos *philosopher)
 {
 	long	timer;
 
@@ -151,16 +151,16 @@ static char	think(t_philosophers *philosopher)
 	//printf("%ld %d has taken a fork\n", timer, philosopher->id);
 	//printf("Fork: %p\n", (void *)right_fork);
 	return (0);
-}
+}*/
 
-/*char	is_dead(t_philosophers *philosopher)
+/*char	is_dead(t_philos *philosopher)
 {
 	if (timer >= time_to_die)
 		return (1);
 	return (0);
 }*/
 
-/*char	lock_forks(t_philosophers *philosopher)
+/*char	lock_forks(t_philos *philosopher)
 {
 	//long	timer;
 	

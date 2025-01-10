@@ -6,12 +6,12 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:33:16 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/08 20:33:21 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/10 20:46:26 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-
+/*
 long	get_time(void)
 {
 	struct timeval	timer;
@@ -20,17 +20,17 @@ long	get_time(void)
 	return (timer.tv_sec * 1000 + timer.tv_usec / 1000);
 }
 
-/*long	calculate_time_since_last_meal(philosopher)
+long	calculate_time_since_last_meal(philosopher)
 {
 	
-}*/
+}
 
 void	*check_death(void *arg)
 {
 	long			timer;
-	t_philosophers	philosopher;
+	t_philos	philosopher;
 
-	philosopher = *(t_philosophers *)arg;
+	philosopher = *(t_philos *)arg;
 	while (1)
 	{
 		
@@ -46,4 +46,4 @@ void	*check_death(void *arg)
 		}
 	}
 	return (NULL);
-}
+}*/

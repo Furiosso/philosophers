@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:34:08 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/08 20:34:15 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/10 20:54:07 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,34 +29,47 @@ void	*ft_calloc(size_t count, size_t size)
 	return ((void *)ptr);
 }
 
-int	ft_atoi(const char *str)
+size_t	ft_atol(const char *str)
 {
-	int		num;
-	char	odd;
+	unsigned long long	num;
+	char				len;
 
-	num = 0;
-	odd = 0;
 	while (*str == 32 || (*str > 8 && *str < 14))
 		str++;
-	if (*str == 45 || *str == 43)
-	{
-		if (*str == 45)
-			odd = 1;
+	if (*str == 43)
 		str++;
-	}
+	num = 0;
+	len = 0;
 	while (*str > 47 && *str < 58)
 	{
+		len++;
+		if (len > 10)
+			return (0);
 		num = num * 10 + *str - 48;
 		str++;
 	}
-	if (odd)
-		num = -num;
-	return (num);
+	if (num > 0xffffffff)
+		return (0);
+	return ((size_t)num);
 }
 
 int	ft_isdigit(int c)
 {
 	if (c < 48 || c > 57)
+		return (0);
+	return (1);
+}
+
+char	ft_isnumber(char *str)
+{
+	int		i;
+
+	i = 0;
+	while (str[i] == ' ' || (*str > 8 && *str < 14))
+		i++;
+	if (str[i] == '+')
+		i++;
+	if (!ft_isdigit(str[i]))
 		return (0);
 	return (1);
 }
