@@ -24,6 +24,10 @@
 	int		lives;
 	long	last_meal;
 }	t_philo;*/
+typedef struct s_table
+{
+	char *is_someone_dead;
+}	t_table;
 
 typedef struct s_philosophers
 {
