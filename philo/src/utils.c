@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:34:08 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/10 20:54:07 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/12 18:23:23 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,7 @@ size_t	ft_atol(const char *str)
 	len = 0;
 	while (*str > 47 && *str < 58)
 	{
-		len++;
-		if (len > 10)
+		if (++len > 10)
 			return (0);
 		num = num * 10 + *str - 48;
 		str++;

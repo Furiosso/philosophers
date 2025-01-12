@@ -6,13 +6,13 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:51:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/10 19:54:42 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/12 19:18:07 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 /*
-void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id)
+void		lock_forks(t_mutex *left_fork, t_mutex *right_fork, int id)
 {
 	long	fork_time;
 
@@ -27,9 +27,17 @@ void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id
 	printf("%ld %d has taken a fork\n", fork_time, id);
 	//printf("Fork: %p\n", (void *)right_fork);
 }
-
-void		unlock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork)
+*/
+void	unlock_forks(t_philos *philosopher)
 {
-	pthread_mutex_unlock(left_fork);
-	pthread_mutex_unlock(right_fork);
-}*/
+	if (philosopher->is_left_locked)
+	{
+		pthread_mutex_unlock(philosopher->left_fork);
+		philosopher->is_left_locked = 0;
+	}
+	if (philosopher->is_right_locked)
+	{
+		pthread_mutex_unlock(philosopher->right_fork);
+		philosopher->is_right_locked = 0;
+	}
+}

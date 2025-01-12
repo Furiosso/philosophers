@@ -6,20 +6,20 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:33:16 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/10 20:46:26 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/13 00:20:56 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-/*
-long	get_time(void)
+
+size_t	get_time(void)
 {
 	struct timeval	timer;
 
 	gettimeofday(&timer, NULL);
 	return (timer.tv_sec * 1000 + timer.tv_usec / 1000);
 }
-
+/*
 long	calculate_time_since_last_meal(philosopher)
 {
 	

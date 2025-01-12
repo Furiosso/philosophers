@@ -6,23 +6,25 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:01 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/10 21:41:36 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/13 00:28:42 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
 
-//static pthread_mutex_t	*initialize_mutex(int number_of_forks);
-//static pthread_t		*initialize_threads(char **argv, t_philos *philos, pthread_mutex_t *forks);
-static void	free_stuff(t_table *table, t_philos *params, pthread_mutex_t *forks, pthread_t *threads);
-//static void				join_threads(pthread_t *threads, pthread_mutex_t *forks, int number_of_threads);
+static t_mutex	*initialize_mutex(int number_of_forks);
+static pthread_t		*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks);
+static void	free_stuff(t_table *table, t_philos *params, t_mutex *forks, pthread_t *threads);
+static void				join_threads(pthread_t *threads, t_mutex *forks, size_t number_of_threads);
+static void	check_death(t_table *table, t_philos *philos);
+static void	detach_threads(t_table *table, t_philos *philos);
 
 int	main(int argc, char **argv)
 {
 	t_philos	*philos;
 	t_table		*table;
-	//pthread_t		*threads;
-	//pthread_mutex_t	*forks;
+	pthread_t	*threads;
+	t_mutex		*forks;
 
 	table = (t_table *)ft_calloc(1, sizeof(t_table));
 	if (!table)
@@ -35,28 +37,28 @@ int	main(int argc, char **argv)
 	philos = initialize_philos(table);
 	if (!philos)
 	{
-		free_stuff(table, philos, NULL, NULL);
+		free(table);
 		return (4);
 	}
-	free_stuff(table, philos, NULL, NULL);
-	/*
-	forks = initialize_mutex(ft_atoi(argv[1]));
+	forks = initialize_mutex(table->number_of_philosophers);
 	if (!forks)
 	{
 		free_stuff(table, philos, NULL, NULL);
 		return (4);
 	}
-	threads = initialize_threads(argv, philos, forks);
+	threads = initialize_threads(table, philos, forks);
 	if (!threads)
 	{
 		free_stuff(table, philos, forks, NULL);
 		return (4);
 	}
-	join_threads(threads, forks, ft_atoi(argv[1]));
-	free_stuff(table, philos, forks, threads);*/
+	check_death(table, philos);
+	if (!table->is_someone_dead)
+		join_threads(threads, forks, table->number_of_philosophers);
+	free_stuff(table, philos, forks, NULL);
 }
 
-static void	free_stuff(t_table *table, t_philos *philos, pthread_mutex_t *forks, pthread_t *threads)
+static void	free_stuff(t_table *table, t_philos *philos, t_mutex *forks, pthread_t *threads)
 {
 	//int	i;
 	if (threads)
@@ -69,13 +71,13 @@ static void	free_stuff(t_table *table, t_philos *philos, pthread_mutex_t *forks,
 	free(table);
 	free(philos);
 }
-/*
-static pthread_mutex_t	*initialize_mutex(int number_of_forks)
-{
-	pthread_mutex_t	*forks;
-	int				i;
 
-	forks = ft_calloc(number_of_forks, sizeof(pthread_mutex_t));
+static t_mutex	*initialize_mutex(int number_of_forks)
+{
+	t_mutex	*forks;
+	int		i;
+
+	forks = ft_calloc(number_of_forks, sizeof(t_mutex));
 	if (!forks)
 		return (NULL);
 	i = 0;
@@ -91,18 +93,21 @@ static pthread_mutex_t	*initialize_mutex(int number_of_forks)
 	return (forks);
 }
 
-pthread_t	*initialize_threads(char **argv, t_philos *philos, pthread_mutex_t *forks)
+pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
 {
-	int			i;
+	size_t		i;
 	pthread_t	*threads;
+	size_t		number_of_philosophers;
 
-	threads = ft_calloc(ft_atoi(argv[1]), sizeof(pthread_t));
+	number_of_philosophers = table->number_of_philosophers;
+	threads = ft_calloc(table->number_of_philosophers, sizeof(pthread_t));
 	if (!threads)
 		return (0);
+	table->threads = threads;
 	i = 0;
-	while (i < ft_atoi(argv[1]))
+	while (i < number_of_philosophers)
 	{
-		philos[i] = fill_params(argv, forks, &threads[i], i);
+		philos[i] = fill_params(table, forks, i);
 		//printf("Thread address before created: %p\n", &threads[i]);
 		//printf("Before creating thread: %d\n", philos[i].id);
 		if (philos[i].id % 2 == 0)
@@ -115,9 +120,9 @@ pthread_t	*initialize_threads(char **argv, t_philos *philos, pthread_mutex_t *fo
 	return (threads);
 }
 
-void	join_threads(pthread_t *threads, pthread_mutex_t *forks, int number_of_threads)
+static void	join_threads(pthread_t *threads, t_mutex *forks, size_t number_of_threads)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
 	while (i < number_of_threads)
@@ -131,4 +136,41 @@ void	join_threads(pthread_t *threads, pthread_mutex_t *forks, int number_of_thre
 		if (pthread_mutex_destroy(&forks[i++]) != 0)
 			return ;
 	}
-}*/
+}
+
+ static void	check_death(t_table *table, t_philos *philos)
+{
+	size_t	i;
+	size_t	timer;
+
+	i = 0;
+	while (table->are_done < table->number_of_philosophers)
+	{
+		timer = get_time();
+		printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
+		if (table->time_to_die <= timer - philos[i].last_meal)
+		{
+			printf("%ld %zu died\n", timer - philos[i].start_time, philos[i].id);
+			detach_threads(table, philos);
+			break ;
+		}
+		i++;
+		if (i == table->number_of_philosophers)
+			i = 0;
+	}
+}
+
+static void	detach_threads(t_table *table, t_philos *philos)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < table->number_of_philosophers)
+	{
+		if (philos[i].is_left_locked)
+			pthread_mutex_unlock(philos[i].left_fork);
+		if (philos[i].is_right_locked)
+			pthread_mutex_unlock(philos[i].right_fork);
+		pthread_detach(table->threads[i++]);
+	}
+}

@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:50:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/10 21:36:50 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/13 00:21:52 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,25 @@
 # include <unistd.h>
 # include <pthread.h>
 
+typedef pthread_mutex_t	t_mutex;
+
 typedef struct s_table
 {
-	char	*is_someone_dead;
-	size_t	number_of_philosophers;
-	size_t	time_to_die;
-	size_t	time_to_eat;
-	size_t	time_to_sleep;
-	size_t	number_of_times_each_philosopher_must_eat;
+	char		is_someone_dead;
+	size_t		are_done;
+	size_t		number_of_philosophers;
+	size_t		time_to_die;
+	size_t		time_to_eat;
+	size_t		time_to_sleep;
+	size_t		number_of_times_each_philosopher_must_eat;
+	pthread_t	*threads;
 }	t_table;
 
 typedef struct s_philos
 {
 	//pthread_t		*tphilos;
 	//t_philo			*philosopher;
-	int				id;
+	size_t			id;
 	pthread_t		*thread;
 	long			start_time;
 	long			last_meal;
@@ -40,24 +44,25 @@ typedef struct s_philos
 	//int				forks;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	char			is_locked;
+	char			is_left_locked;
+	char			is_right_locked;
 	t_table			*table;
+	struct s_philos	*next;
 }	t_philos;
 
 char		check_args(int argc, char **argv, t_table *table);
 //void		*check_death(void *arg);
-long		get_time(void);
-t_philos	fill_params(char **argv, pthread_mutex_t *forks, pthread_t *thread, int i);
-size_t			ft_atol(const char *str);
+size_t		get_time(void);
+t_philos	fill_params(t_table *table, t_mutex *forks, int i);
+size_t		ft_atol(const char *str);
 void		*ft_calloc(size_t count, size_t size);
 char		ft_isnumber(char *str);
-long		get_time(void);
-t_philos  *initialize_philos(t_table *table);
+t_philos	*initialize_philos(t_table *table);
 //int			initialize_threads(char **argv, t_philos **params, pthread_mutex_t *forks);
 //void		join_threads(t_philos *params, int number_of_philosophers);
 void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
 //char		lock_forks(t_philos *philosopher);
 void		*routine(void *arg);
-void		unlock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork);
+void		unlock_forks(t_philos *philosopher);
 
 #endif
