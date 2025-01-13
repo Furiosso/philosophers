@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/13 00:24:39 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/13 15:07:02 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ static int	cycle(t_philos *philosopher)
 	size_t	start_time;
 
 	//time_to_die = philosopher->table->time_to_die;
+	philosopher->table->are_done++;
+	philosopher->id++;
 	time_to_eat = philosopher->table->time_to_eat;
 	time_to_sleep = philosopher->table->time_to_sleep;
 	start_time = philosopher->start_time;
