@@ -147,7 +147,7 @@ static void	join_threads(pthread_t *threads, t_mutex *forks, size_t number_of_th
 	while (table->are_done < table->number_of_philosophers)
 	{
 		timer = get_time();
-		//printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
+		printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
 		printf("philosopher.id: %zu\n", philos[i].id);
 		if (table->time_to_die <= timer - philos[i].last_meal)
 		{
