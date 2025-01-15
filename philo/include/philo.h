@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:50:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/13 00:21:52 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/15 19:10:46 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ typedef struct s_philos
 	//t_philo			*philosopher;
 	size_t			id;
 	pthread_t		*thread;
-	long			start_time;
-	long			last_meal;
+	size_t			start_time;
+	size_t			last_meal;
 	//pthread_mutex_t	*fmutex;
 	//int				forks;
 	pthread_mutex_t	*left_fork;

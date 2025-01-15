@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:01 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/13 16:33:03 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/15 19:24:37 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static pthread_t		*initialize_threads(t_table *table, t_philos *philos, t_mutex 
 static void	free_stuff(t_table *table, t_philos *params, t_mutex *forks, pthread_t *threads);
 static void				join_threads(pthread_t *threads, t_mutex *forks, size_t number_of_threads);
 static void	check_death(t_table *table, t_philos *philos);
-//static void	detach_threads(t_table *table, t_philos *philos);
+static void	detach_threads(t_table *table, t_philos *philos);
 
 int	main(int argc, char **argv)
 {
@@ -142,15 +142,29 @@ static void	join_threads(pthread_t *threads, t_mutex *forks, size_t number_of_th
 {
 	size_t	i;
 	size_t	timer;
+	size_t	last_meal[4];
 
 	i = 0;
+	while (i < 4)
+	{
+		last_meal[i] = philos[i].start_time;
+		i++;
+	}
+	printf("table->are_done: %zu table->number_of_philophers: %zu\n", table->are_done, table->number_of_philosophers);
 	while (table->are_done < table->number_of_philosophers)
 	{
 		timer = get_time();
-		printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
-		printf("philosopher.id: %zu\n", philos[i].id);
+		if (last_meal[i] != philos[i].last_meal)
+		{
+			last_meal[i] = philos[i].last_meal;
+			printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
+			printf("time to die: %zu\n", table->time_to_die);
+		}
+		//printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
+		//printf("philosopher.id: %zu\n", philos[i].id);
 		if (table->time_to_die <= timer - philos[i].last_meal)
 		{
+			printf("timer - philos[%zu].last_meal: %zu\n", philos[i].id, timer - philos[i].last_meal);
 			printf("%ld %zu died\n", timer - philos[i].start_time, philos[i].id);
 			detach_threads(table, philos);
 			break ;

@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/13 15:07:02 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/15 19:00:23 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,18 @@ static void	think(t_philos *philosopher);
 
 void	*routine(void *arg)
 {
-	t_philos	philosopher;
+	t_philos	*philosopher;
 	size_t		cycles;
 	//char			is_dead;
 	//pthread_t		thread;
 	//struct timeval	last_meal;
 
-	philosopher = *(t_philos *)arg;
-	cycles = philosopher.table->number_of_times_each_philosopher_must_eat;
+	philosopher = (t_philos *)arg;
+	cycles = philosopher->table->number_of_times_each_philosopher_must_eat;
 	//printf("Thread address in the thread: %p\n", philosopher.thread);
 	//printf("In the thread: %zu\n", philosopher.id);
 	//philosopher.last_meal = get_time();
-	philosopher.last_meal = philosopher.start_time;
+	philosopher->last_meal = philosopher->start_time;
 	//if (pthread_create(&thread, NULL, &check_death, &philosopher))
 	//gettimeofday(&last_meal, NULL);
 	//printf("%ld last meal\n", last_meal.tv_usec);
@@ -41,7 +41,7 @@ void	*routine(void *arg)
 		{
 			//is_dead = cycle(&philosopher);
 			//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
-			if (!cycle(&philosopher))
+			if (!cycle(philosopher))
 				return (NULL);
 			//if (pthread_join(thread, NULL) != 0)
 			//	return (0);
@@ -52,14 +52,14 @@ void	*routine(void *arg)
 	{
 		//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
 		//	return (0);
-		if (!cycle(&philosopher))
+		if (!cycle(philosopher))
 			return (NULL);
 		//if (!cycle(&philosopher))
 			//return (NULL);
 		//if (pthread_join(thread, NULL) != 0)
 		//	return (0);
 	}
-	philosopher.table->are_done++;
+	philosopher->table->are_done++;
 	return (NULL);
 }
 
@@ -72,8 +72,7 @@ static int	cycle(t_philos *philosopher)
 	size_t	start_time;
 
 	//time_to_die = philosopher->table->time_to_die;
-	philosopher->table->are_done++;
-	philosopher->id++;
+	//philosopher->table->are_done++;
 	time_to_eat = philosopher->table->time_to_eat;
 	time_to_sleep = philosopher->table->time_to_sleep;
 	start_time = philosopher->start_time;
@@ -88,7 +87,8 @@ static int	cycle(t_philos *philosopher)
 	}*/
 	timer = get_time();
 	philosopher->last_meal = timer;
-	printf("%zu - %zu = %zu\n", timer, philosopher->last_meal, timer - philosopher->last_meal);
+	printf("Inside cycle> %zu last meal: %zu\n", philosopher->id, philosopher->last_meal);
+	//printf("%zu - %zu = %zu\n", timer, philosopher->last_meal, timer - philosopher->last_meal);
 	printf ("%ld %zu is eating\n", timer - start_time, philosopher->id);
 	/*if (time_to_eat >= time_to_die)
 	{
