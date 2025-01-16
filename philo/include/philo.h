@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:50:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/15 19:10:46 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/16 22:10:11 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ char		ft_isnumber(char *str);
 t_philos	*initialize_philos(t_table *table);
 //int			initialize_threads(char **argv, t_philos **params, pthread_mutex_t *forks);
 //void		join_threads(t_philos *params, int number_of_philosophers);
-void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
+//void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
 //char		lock_forks(t_philos *philosopher);
 void		*routine(void *arg);
 void		unlock_forks(t_philos *philosopher);

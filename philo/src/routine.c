@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/15 19:00:23 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/16 22:05:32 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static int	cycle(t_philos *philosopher)
 	}*/
 	timer = get_time();
 	philosopher->last_meal = timer;
-	printf("Inside cycle> %zu last meal: %zu\n", philosopher->id, philosopher->last_meal);
+	//printf("Inside cycle> %zu last meal: %zu\n", philosopher->id, philosopher->last_meal);
 	//printf("%zu - %zu = %zu\n", timer, philosopher->last_meal, timer - philosopher->last_meal);
 	printf ("%ld %zu is eating\n", timer - start_time, philosopher->id);
 	/*if (time_to_eat >= time_to_die)
