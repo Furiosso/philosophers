@@ -45,16 +45,11 @@ char	check_args(int argc, char **argv, t_table *table)
 char	fill_table(t_table *table, char **argv)
 {
 	table->number_of_philosophers = ft_atol(argv[1]);
-	if (!table->number_of_philosophers)
-		return (0);
 	table->time_to_die = ft_atol(argv[2]);
-	if (!table->time_to_die)
-		return (0);
 	table->time_to_eat = ft_atol(argv[3]);
-	if (!table->time_to_eat)
-		return (0);
 	table->time_to_sleep = ft_atol(argv[4]);
-	if (!table->time_to_sleep)
+	if (!table->number_of_philosophers || !table->time_to_die
+		|| !table->time_to_eat || !table->time_to_sleep)
 		return (0);
 	if (argv[5])
 	{

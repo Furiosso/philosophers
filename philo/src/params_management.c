@@ -28,6 +28,6 @@ t_philos	fill_params(t_table *table, t_mutex *forks, int i)
 	philosopher.table = table;
 	philosopher.start_time = get_time();
 	philosopher.last_meal = philosopher.start_time;
-	//philosopher.last_meal = 0;
+	philosopher.is_done = 0;
 	return (philosopher);
 }

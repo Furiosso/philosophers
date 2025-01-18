@@ -28,6 +28,7 @@ typedef struct s_table
 	size_t		time_to_die;
 	size_t		time_to_eat;
 	size_t		time_to_sleep;
+	t_mutex		are_done_mutex;
 	size_t		number_of_times_each_philosopher_must_eat;
 	pthread_t	*threads;
 }	t_table;
@@ -42,10 +43,11 @@ typedef struct s_philos
 	size_t			last_meal;
 	//pthread_mutex_t	*fmutex;
 	//int				forks;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
+	t_mutex	*left_fork;
+	t_mutex	*right_fork;
 	char			is_left_locked;
 	char			is_right_locked;
+	char			is_done;
 	t_table			*table;
 	struct s_philos	*next;
 }	t_philos;

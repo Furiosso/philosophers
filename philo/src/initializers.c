@@ -17,7 +17,7 @@ t_philos	*initialize_philos(t_table *table)
 	t_philos	*philos;
 	size_t		i;
 
-	philos = ft_calloc(table->number_of_philosophers + 1, sizeof(t_philos));
+	philos = ft_calloc(table->number_of_philosophers, sizeof(t_philos));
 	if (!philos)
 		return (NULL);
 	i  = 0;

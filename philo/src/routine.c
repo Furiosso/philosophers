@@ -59,7 +59,10 @@ void	*routine(void *arg)
 		//if (pthread_join(thread, NULL) != 0)
 		//	return (0);
 	}
+	philosopher->is_done = 1;
+	pthread_mutex_lock(&philosopher->table->are_done_mutex);
 	philosopher->table->are_done++;
+	pthread_mutex_unlock(&philosopher->table->are_done_mutex);
 	return (NULL);
 }
 
@@ -124,6 +127,7 @@ static int	cycle(t_philos *philosopher)
 	//	printf("%ld %zu died\n", get_time() - philosopher->start_time, philosopher->id);
 	//		return (0);
 	//}
+	//printf ("timer when cycle ends: %zu\n", get_time() - start_time);
 	return (1);
 }
 
