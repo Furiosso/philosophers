@@ -57,5 +57,7 @@ char	fill_table(t_table *table, char **argv)
 		if (!table->number_of_times_each_philosopher_must_eat)
 			return (0);
 	}
+	table->is_someone_dead = 0;
+	table->time_to_think = table->time_to_eat - table->time_to_sleep;
 	return (1);
 }

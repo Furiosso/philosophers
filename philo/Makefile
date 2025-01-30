@@ -4,7 +4,7 @@ SRC_DIR = src
 INCLUDE_DIR = include
 BUILD_DIR = build
 CFILES = $(wildcard $(SRC_DIR)/*.c)
-CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_DIR) -g3 -pthread #-fsanitize=address,leak
+CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_DIR) -g3 -pthread #-fsanitize=thread
 OFILES = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(CFILES))
 
 all: $(NAME)

@@ -25,6 +25,7 @@ t_philos	fill_params(t_table *table, t_mutex *forks, int i)
 		philosopher.right_fork = &forks[i + 1];
 	philosopher.is_left_locked = 0;
 	philosopher.is_right_locked = 0;
+	philosopher.has_had_first_meal = 0;
 	philosopher.table = table;
 	philosopher.start_time = get_time();
 	philosopher.last_meal = philosopher.start_time;
