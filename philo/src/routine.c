@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/16 22:05:32 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/01/30 13:28:29 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,11 +169,21 @@ static int	take_forks(t_philos *philosopher)
 		if (check_if_someone_is_dead(philosopher->table))
 			return (0);
 		pthread_mutex_lock(philosopher->left_fork);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			pthread_mutex_unlock(philosopher->left_fork);
+			return (0);
+		}
 		philosopher->is_left_locked = 1;
 		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
 		if (check_if_someone_is_dead(philosopher->table))
 			return (0);
 		pthread_mutex_lock(philosopher->right_fork);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			pthread_mutex_unlock(philosopher->right_fork);
+			return (0);
+		}
 		philosopher->is_right_locked = 1;
 		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
 	}
@@ -182,11 +192,21 @@ static int	take_forks(t_philos *philosopher)
 		if (check_if_someone_is_dead(philosopher->table))
 			return (0);
 		pthread_mutex_lock(philosopher->right_fork);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			pthread_mutex_unlock(philosopher->right_fork);
+			return (0);
+		}
 		philosopher->is_right_locked = 1;
 		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
 		if (check_if_someone_is_dead(philosopher->table))
 			return (0);
 		pthread_mutex_lock(philosopher->left_fork);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			pthread_mutex_unlock(philosopher->left_fork);
+			return (0);
+		}
 		philosopher->is_left_locked = 1;
 		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
 	}
