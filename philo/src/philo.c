@@ -12,7 +12,7 @@
 
 #include "../include/philo.h"
 
-static t_mutex	*initialize_mutex(int number_of_forks, t_mutex *are_done_mutex, t_mutex *is_someone_dead_mutex);
+static t_mutex	*initialize_mutex(t_table *table);
 static pthread_t		*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks);
 static void	free_stuff(t_table *table, t_philos *params, t_mutex *forks, pthread_t *threads);
 static void				join_threads(pthread_t *threads, t_mutex *forks, t_table *table);
@@ -26,85 +26,70 @@ int	main(int argc, char **argv)
 	pthread_t	*threads;
 	t_mutex		*forks;
 
-	table = (t_table *)ft_calloc(1, sizeof(t_table));
+	table = check_args(argc, argv);
 	if (!table)
-		return (2);
-	if (!check_args(argc, argv, table))
-	{
-		free(table);
-		return (3);
-	}
+		return (1);
 	philos = initialize_philos(table);
-	if (!philos)
+	forks = initialize_mutex(table);
+	if (!philos || !forks)//revisar esto porque a lo mejor hay que destruir los mutex antes de liberarlos
 	{
-		free(table);
-		return (4);
-	}
-	forks = initialize_mutex(table->number_of_philosophers, &table->are_done_mutex, &table->is_someone_dead_mutex);
-	if (!forks)
-	{
-		free_stuff(table, philos, NULL, NULL);
-		return (4);
+		free_stuff(table, philos, forks, NULL);
+		return (2);
 	}
 	threads = initialize_threads(table, philos, forks);
 	if (!threads)
 	{
 		free_stuff(table, philos, forks, NULL);
-		return (4);
+		return (3);
 	}
 	check_death(table, philos/*, threads, forks*/);
 	join_threads(threads, forks, table);
-	//free_stuff(table, philos, forks, NULL);
 	free_stuff(table, philos, forks, threads);
-	pthread_exit(0);
 }
 
-static void	free_stuff(t_table *table, t_philos *philos, t_mutex *forks, pthread_t *threads)
+static void	free_stuff(t_table *t, t_philos *ph, t_mutex *f, pthread_t *th)
 {
-	//int	i;
-	if (threads)
-		free(threads);
-	if (forks)
-		free(forks);
-	//i = 0;
-	//while (params[i])
-	//	free(params[i]);
-	free(table);
-	free(philos);
+	free(t);
+	if (th)
+		free(th);
+	if (f)
+		free(f);
+	if (ph)
+		free(ph);
 }
 
-static t_mutex	*initialize_mutex(int number_of_forks, t_mutex *are_done_mutex, t_mutex *is_someone_dead_mutex)
+static t_mutex	*initialize_mutex(t_table *table)
 {
 	t_mutex	*forks;
-	int		i;
+	size_t	i;
 
-	forks = ft_calloc(number_of_forks, sizeof(t_mutex));
+	forks = ft_calloc(table->number_of_philosophers, sizeof(t_mutex));
 	if (!forks)
 		return (NULL);
 	i = 0;
-	while (i < number_of_forks)
+	while (i < table->number_of_philosophers)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)
 		{
-			while (i >= 0)
+			while ((int)i >= 0)
 				pthread_mutex_destroy(&forks[i--]);
 			free(forks);
 			return (NULL);
 		}
 		i++;
 	}
-	if (pthread_mutex_init(are_done_mutex, NULL) != 0)
+	if (pthread_mutex_init(&table->are_done_mutex, NULL) != 0)
 	{
-		while (i >= 0)
+		while ((int)i >= 0)
 			pthread_mutex_destroy(&forks[i--]);
 		free(forks);
 		return (NULL);
 	}
-	if (pthread_mutex_init(is_someone_dead_mutex, NULL) != 0)
+	if (pthread_mutex_init(&table->is_someone_dead_mutex, NULL) != 0)
 	{
-		while (i >= 0)
+		while ((int)i >= 0)
 			pthread_mutex_destroy(&forks[i--]);
-		pthread_mutex_destroy(are_done_mutex);
+		pthread_mutex_destroy(&table->are_done_mutex);
 		free(forks);
 		return (NULL);
 	}

@@ -12,52 +12,59 @@
 
 #include "../include/philo.h"
 
-char	fill_table(t_table *table, char **argv);
-
-char	check_args(int argc, char **argv, t_table *table)
+void	ft_print_error(char *str)
 {
-	int	i;
-
-	if (argc > 6 || argc < 5)
-	{
-		write (2, "Error:\nPlease check the format\n", 31);
-		return (0);
-	}
-	i = 0;
-	while (argv[++i])
-	{
-		if (!ft_isnumber(argv[i]))
-		{
-			write (2, "Error:\n", 7);
-			write (2, "Only positive numbers allowed\n", 30);
-			return (0);
-		}
-	}
-	if (fill_table(table, argv) == 0)
-	{
-		write(2, "Error\n", 7);
-		write (2, "Invalid value found\n", 20);
-		return (0);
-	}
-	return (1);
+	write(2, "Error:\n", 7);
+	write(2, str, ft_strlen(str));
 }
 
-char	fill_table(t_table *table, char **argv)
+static t_table	*ft_print_error_and_free(char *str, t_table *table)
 {
+	write(2, "Error:\n", 7);
+	write(2, str, ft_strlen(str));
+	free(table);
+	return (NULL);
+}
+
+static t_table	*fill_table(char **argv)
+{
+	t_table	*table;
+
+	table = (t_table *)ft_calloc(1, sizeof(t_table));
+	if (!table)
+		return (NULL);
 	table->number_of_philosophers = ft_atol(argv[1]);
 	table->time_to_die = ft_atol(argv[2]);
 	table->time_to_eat = ft_atol(argv[3]);
 	table->time_to_sleep = ft_atol(argv[4]);
 	if (!table->number_of_philosophers || !table->time_to_die
 		|| !table->time_to_eat || !table->time_to_sleep)
-		return (0);
+		return (ft_print_error_and_free("Invalid value found\n", table));
 	if (argv[5])
 	{
 		table->number_of_times_each_philosopher_must_eat = ft_atol(argv[5]);
 		if (!table->number_of_times_each_philosopher_must_eat)
-			return (0);
+			return (ft_print_error_and_free("Invalid value found\n", table));
 	}
 	table->is_someone_dead = 0;
 	table->time_to_think = table->time_to_eat - table->time_to_sleep;
-	return (1);
+	return (table);
+}
+
+t_table	*check_args(int argc, char **argv)
+{
+	int		i;
+
+	if (argc > 6 || argc < 5)
+	{
+		write (2, "Error:\nPlease check the format\n", 31);
+		return (NULL);
+	}
+	i = 0;
+	while (argv[++i])
+	{
+		if (!ft_isnumber(argv[i]))
+			return (NULL);
+	}
+	return (fill_table(argv));
 }

@@ -69,6 +69,19 @@ char	ft_isnumber(char *str)
 	if (str[i] == '+')
 		i++;
 	if (!ft_isdigit(str[i]))
+	{
+		ft_print_error("Only numbers allowed\n");
 		return (0);
+	}
 	return (1);
+}
+
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }

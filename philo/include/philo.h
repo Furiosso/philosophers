@@ -55,13 +55,15 @@ typedef struct s_philos
 	struct s_philos	*next;
 }	t_philos;
 
-char		check_args(int argc, char **argv, t_table *table);
+t_table		*check_args(int argc, char **argv);
 //void		*check_death(void *arg);
 size_t		get_time(void);
 t_philos	fill_params(t_table *table, t_mutex *forks, int i);
 size_t		ft_atol(const char *str);
 void		*ft_calloc(size_t count, size_t size);
 char		ft_isnumber(char *str);
+size_t		ft_strlen(const char *str);
+void		ft_print_error(char *str);
 t_philos	*initialize_philos(t_table *table);
 //int			initialize_threads(char **argv, t_philos **params, pthread_mutex_t *forks);
 //void		join_threads(t_philos *params, int number_of_philosophers);
