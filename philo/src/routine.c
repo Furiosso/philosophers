@@ -29,6 +29,9 @@ void	*routine(void *arg)
 	//printf("Thread address in the thread: %p\n", philosopher.thread);
 	//printf("In the thread: %zu\n", philosopher.id);
 	//philosopher.last_meal = get_time();
+	while (!check_mutex(philosopher->table->everyone_is_ready_mutex, &philosopher->table->everyone_is_ready, philosopher->table->number_of_philosophers))
+		;
+	philosopher->start_time = get_time();//revisar esto a ver si se puede hacer como un miembro de table
 	philosopher->last_meal = philosopher->start_time;
 	//if (pthread_create(&thread, NULL, &check_death, &philosopher))
 	//gettimeofday(&last_meal, NULL);
@@ -52,7 +55,7 @@ void	*routine(void *arg)
 		}
 		return (NULL);
 	}
-	while (cycles-- && check_if_someone_is_dead(philosopher->table))
+	while (cycles-- && !check_if_someone_is_dead(philosopher->table))
 	{
 		//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
 		//	return (0);
@@ -265,5 +268,17 @@ int	check_if_someone_is_dead(t_table *table)
 		return (1);
 	}
 	pthread_mutex_unlock(&table->is_someone_dead_mutex);
+	return (0);
+}
+
+int	check_mutex(t_mutex mutex, size_t *variable, size_t number_of_philosophers)
+{
+	pthread_mutex_lock(&mutex);
+	if (++(*variable) >= number_of_philosophers)
+	{
+		pthread_mutex_unlock(&mutex);
+		return (1);
+	}
+	pthread_mutex_unlock(&mutex);
 	return (0);
 }

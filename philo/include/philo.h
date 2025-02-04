@@ -22,8 +22,9 @@ typedef pthread_mutex_t	t_mutex;
 
 typedef struct s_table
 {
-	char		is_someone_dead;
+	int			is_someone_dead;
 	size_t		are_done;
+	size_t		everyone_is_ready;
 	size_t		number_of_philosophers;
 	size_t		time_to_die;
 	size_t		time_to_eat;
@@ -32,6 +33,7 @@ typedef struct s_table
 	t_mutex		*forks;
 	t_mutex		are_done_mutex;
 	t_mutex		is_someone_dead_mutex;
+	t_mutex		everyone_is_ready_mutex;
 	size_t		number_of_times_each_philosopher_must_eat;
 	pthread_t	*threads;
 }	t_table;
@@ -57,6 +59,8 @@ typedef struct s_philos
 }	t_philos;
 
 t_table		*check_args(int argc, char **argv);
+int			check_if_someone_is_dead(t_table *table);
+int			check_mutex(t_mutex mutex, size_t *variable, size_t number_of_philosophers);
 //void		*check_death(void *arg);
 size_t		get_time(void);
 t_philos	fill_params(t_table *table, t_mutex *forks, int i);
@@ -69,7 +73,7 @@ size_t		ft_strlen(const char *str);
 void		ft_print_error(char *str);
 int			initialize_mutex_and_threads(t_table *table, t_philos *philos);
 t_philos	*initialize_philos(t_table *table);
-pthread_t		*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks);
+pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks);
 //void		join_threads(t_philos *params, int number_of_philosophers);
 //void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
 //char		lock_forks(t_philos *philosopher);

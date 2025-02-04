@@ -12,23 +12,6 @@
 
 #include "../include/philo.h"
 
-t_philos	*initialize_philos(t_table *table)
-{
-	t_philos	*philos;
-	size_t		i;
-
-	philos = ft_calloc(table->number_of_philosophers, sizeof(t_philos));
-	if (!philos)
-		return (NULL);
-	i  = 0;
-	while (i < table->number_of_philosophers)
-	{
-		philos[i].table = table;
-		i++;
-	}
-	return (philos);
-}
-
 static t_mutex	*initialize_mutexes(t_table *table)
 {
 	t_mutex	*forks;
@@ -47,9 +30,40 @@ static t_mutex	*initialize_mutexes(t_table *table)
 	i = table->number_of_philosophers - 1;
 	if (!ft_start_mutex(table->are_done_mutex, forks, i))
 		return (NULL);
-	if (!ft_start_mutex(table->is_someone_dead_mutex, forks, i))
+	if (!ft_start_mutex(table->is_someone_dead_mutex, forks, i))//revisar que los mutex se destruyan si no estan inicializados
+		return (NULL);
+	if (!ft_start_mutex(table->everyone_is_ready_mutex, forks, i))
 		return (NULL);
 	return (forks);
+}
+
+pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
+{
+	int			i;
+	pthread_t	*threads;
+
+	threads = ft_calloc(table->number_of_philosophers, sizeof(pthread_t));
+	if (!threads)
+		return (NULL);
+	i = 0;
+	while (i < (int)table->number_of_philosophers)
+	{
+		philos[i] = fill_params(table, forks, i);
+		if (pthread_create(&threads[i], NULL, &routine, &philos[i]))
+		{
+			ft_print_error("Thread couldn't be created\n");
+			while (--i > -1)
+				pthread_detach(threads[i]);//revisar esto
+			while (++i < (int)table->number_of_philosophers)
+				pthread_mutex_destroy(&forks[i]);
+			pthread_mutex_destroy(&table->are_done_mutex);
+			pthread_mutex_destroy(&table->is_someone_dead_mutex);
+			pthread_mutex_destroy(&table->everyone_is_ready_mutex);
+			return (NULL);
+		}
+		i++;
+	}
+	return (threads);
 }
 
 int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
@@ -67,4 +81,21 @@ int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
 		return (0);
 	}
 	return (1);
+}
+
+t_philos	*initialize_philos(t_table *table)
+{
+	t_philos	*philos;
+	size_t		i;
+
+	philos = ft_calloc(table->number_of_philosophers, sizeof(t_philos));
+	if (!philos)
+		return (NULL);
+	i  = 0;
+	while (i < table->number_of_philosophers)
+	{
+		philos[i].table = table;
+		i++;
+	}
+	return (philos);
 }

@@ -87,44 +87,6 @@ static void	*routine(void *arg)
 	return (NULL);
 }*/
 
-pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
-{
-	size_t		i;
-	pthread_t	*threads;
-
-	threads = ft_calloc(table->number_of_philosophers, sizeof(pthread_t));
-	if (!threads)
-		return (0);
-	table->threads = threads;
-	i = 0;
-	while (i < table->number_of_philosophers)
-	{
-		philos[i] = fill_params(table, forks, i);
-		//printf("Thread address before created: %p\n", &threads[i]);
-		//printf("Before creating thread: %d\n", philos[i].id);
-		//if (philos[i].id % 2 == 0)
-		//	usleep(500);
-		if (pthread_create(&threads[i], NULL, &routine, &philos[i]) != 0)
-		{
-			while (i > 0)
-				pthread_detach(threads[i--]);
-			pthread_detach(threads[i]);
-			i = 0;
-			while (i < table->number_of_philosophers)
-			{
-				if (pthread_mutex_destroy(&forks[i++]) != 0)
-					return (NULL);
-			}
-			if (pthread_mutex_destroy(&table->are_done_mutex) != 0)
-				return (NULL);
-			return (NULL);
-		}
-		//printf("Thread address after created: %p\n", &threads[i]);
-		i++;
-	}
-	return (threads);
-}
-
 static void	join_threads(pthread_t *threads, t_mutex *forks, t_table *table)
 {
 	size_t	i;
@@ -163,7 +125,7 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 	//printf("table->are_done: %zu table->number_of_philophers: %zu\n", table->are_done, table->number_of_philosophers);
 	//are_done = table->are_done;
 	i = 0;
-	while (table->are_done < table->number_of_philosophers && !table->is_someone_dead)
+	while (!check_mutex(table->are_done_mutex, &table->are_done, table->number_of_philosophers) && !check_if_someone_is_dead(table))//revisar esto
 	//while (1)
 	{
 		timer = get_time();
