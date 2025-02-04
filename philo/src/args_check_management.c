@@ -20,8 +20,7 @@ void	ft_print_error(char *str)
 
 static t_table	*ft_print_error_and_free(char *str, t_table *table)
 {
-	write(2, "Error:\n", 7);
-	write(2, str, ft_strlen(str));
+	ft_print_error(str);
 	free(table);
 	return (NULL);
 }
@@ -30,7 +29,7 @@ static t_table	*fill_table(char **argv)
 {
 	t_table	*table;
 
-	table = (t_table *)ft_calloc(1, sizeof(t_table));
+	table = ft_calloc(1, sizeof(t_table));
 	if (!table)
 		return (NULL);
 	table->number_of_philosophers = ft_atol(argv[1]);

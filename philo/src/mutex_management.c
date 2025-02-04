@@ -28,6 +28,20 @@ void		lock_forks(t_mutex *left_fork, t_mutex *right_fork, int id)
 	//printf("Fork: %p\n", (void *)right_fork);
 }
 */
+
+int	ft_start_mutex(t_mutex mutex, t_mutex *forks, int key)
+{
+	if (pthread_mutex_init(&mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		while (key > -1)
+			pthread_mutex_destroy(&forks[key--]);
+		free(forks);
+		return (0);
+	}
+	return (1);
+}
+
 void	unlock_forks(t_philos *philosopher)
 {
 	if (philosopher->is_left_locked)
