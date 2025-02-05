@@ -111,36 +111,41 @@ static void	join_threads(pthread_t *threads, t_mutex *forks, t_table *table)
 
 static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, t_mutex *forks*/)
 {
+	//printf("adios xd\n");
 	size_t	i;
 	size_t	timer;
 	//size_t	are_done;
-	size_t	last_meal[4];
+	//size_t	last_meal[4];
 
-	i = 0;
-	while (i < 4)
-	{
-		last_meal[i] = philos[i].start_time;
-		i++;
-	}
+	//i = 0;
+	//while (i < 4)
+	//{
+	//	last_meal[i] = philos[i].start_time;
+	//	i++;
+	//}
 	//printf("table->are_done: %zu table->number_of_philophers: %zu\n", table->are_done, table->number_of_philosophers);
 	//are_done = table->are_done;
 	i = 0;
-	while (!check_mutex(table->are_done_mutex, &table->are_done, table->number_of_philosophers) && !check_if_someone_is_dead(table))//revisar esto
+	//printf("table->are_done: %zu\n", table->are_done);
+	//printf("table->number_of_philosophers: %zu\n", table->number_of_philosophers);
+	while (!check_mutex(&table->are_done_mutex, table->are_done, table->number_of_philosophers)/* && !check_if_someone_is_dead(table)*/)//revisar esto
+	//while (table->are_done < table->number_of_philosophers)
 	//while (1)
 	{
 		timer = get_time();
-		if (last_meal[i] != philos[i].last_meal)
-		{
-			last_meal[i] = philos[i].last_meal;
-			//printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
-			//printf("time to die: %zu\n", table->time_to_die);
-		}
+		//if (last_meal[i] != philos[i].last_meal)
+		//{
+		//	last_meal[i] = philos[i].last_meal;
+		//	printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
+		//	printf("time to die: %zu\n", table->time_to_die);
+		//}
 		//printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
 		//printf("philosopher.id: %zu\n", philos[i].id);
 		//if (!(philos[i].is_done) && (table->time_to_die <= timer - philos[i].last_meal) || table->are_done == table->number_of_philosophers)
 		if (table->time_to_die <= (timer - philos[i].last_meal))
 		{
-			//printf("timer - last meal: %zu\n", timer - philos[i].last_meal);
+			//printf("timer: %zu\n", timer);
+			//printf("last meal: %zu\n", philos[i].last_meal);
 			//printf("timer - philos[%zu].last_meal: %zu\n", philos[i].id, timer - philos[i].last_meal);
 			//if (table->time_to_die <= timer - philos[i].last_meal)
 			//printf("%ld %zu died\n", timer - philos[i].start_time, philos[i].id);
@@ -152,13 +157,13 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 			printf("%ld %zu died\n", get_time() - philos[i].start_time, philos[i].id);
 			break ;
 		}
-		{
+		//{
 			//printf("timer - philos[%zu].last_meal: %zu\n", philos[i].id, timer - philos[i].last_meal);
 			//if (table->time_to_die <= timer - philos[i].last_meal)
 			//printf("%ld %zu died\n", timer - philos[i].start_time, philos[i].id);
 			//detach_threads(table, philos, forks);
 			//break ;
-		}
+		//}
 		i++;
 		if (i == table->number_of_philosophers)
 			i = 0;

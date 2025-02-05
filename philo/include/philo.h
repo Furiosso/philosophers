@@ -23,6 +23,7 @@ typedef pthread_mutex_t	t_mutex;
 typedef struct s_table
 {
 	int			is_someone_dead;
+	size_t		start_time;
 	size_t		are_done;
 	size_t		everyone_is_ready;
 	size_t		number_of_philosophers;
@@ -60,7 +61,7 @@ typedef struct s_philos
 
 t_table		*check_args(int argc, char **argv);
 int			check_if_someone_is_dead(t_table *table);
-int			check_mutex(t_mutex mutex, size_t *variable, size_t number_of_philosophers);
+int			check_mutex(t_mutex *mutex, size_t variable, size_t number_of_philosophers);
 //void		*check_death(void *arg);
 size_t		get_time(void);
 t_philos	fill_params(t_table *table, t_mutex *forks, int i);

@@ -29,8 +29,13 @@ void	*routine(void *arg)
 	//printf("Thread address in the thread: %p\n", philosopher.thread);
 	//printf("In the thread: %zu\n", philosopher.id);
 	//philosopher.last_meal = get_time();
-	while (!check_mutex(philosopher->table->everyone_is_ready_mutex, &philosopher->table->everyone_is_ready, philosopher->table->number_of_philosophers))
+	pthread_mutex_lock(&philosopher->table->everyone_is_ready_mutex);
+	philosopher->table->everyone_is_ready++;
+	pthread_mutex_unlock(&philosopher->table->everyone_is_ready_mutex);
+	//printf("philosopher %zu is ready: %zu\n", philosopher->id, philosopher->table->everyone_is_ready);
+	while (!check_mutex(&philosopher->table->everyone_is_ready_mutex, philosopher->table->everyone_is_ready, philosopher->table->number_of_philosophers))
 		;
+	//	printf("philosopher %zu is ready: %zu\n", philosopher->id, philosopher->table->everyone_is_ready);
 	philosopher->start_time = get_time();//revisar esto a ver si se puede hacer como un miembro de table
 	philosopher->last_meal = philosopher->start_time;
 	//if (pthread_create(&thread, NULL, &check_death, &philosopher))
@@ -67,7 +72,8 @@ void	*routine(void *arg)
 		//	return (0);
 		//printf("perdona\n");
 	}
-	philosopher->is_done = 1;
+	//printf("philosopher %zu is done\n", philosopher->id);
+	//philosopher->is_done = 1;
 	pthread_mutex_lock(&philosopher->table->are_done_mutex);
 	philosopher->table->are_done++;
 	pthread_mutex_unlock(&philosopher->table->are_done_mutex);
@@ -101,6 +107,7 @@ static int	cycle(t_philos *philosopher)
 	}*/
 	timer = get_time();
 	philosopher->last_meal = timer;
+	//printf ("last meal: %zu\n", philosopher->last_meal);
 	//printf("Inside cycle> %zu last meal: %zu\n", philosopher->id, philosopher->last_meal);
 	//printf("%zu - %zu = %zu\n", timer, philosopher->last_meal, timer - philosopher->last_meal);
 	if (check_if_someone_is_dead(philosopher->table))
@@ -271,14 +278,14 @@ int	check_if_someone_is_dead(t_table *table)
 	return (0);
 }
 
-int	check_mutex(t_mutex mutex, size_t *variable, size_t number_of_philosophers)
+int	check_mutex(t_mutex *mutex, size_t variable, size_t number_of_philosophers)
 {
-	pthread_mutex_lock(&mutex);
-	if (++(*variable) >= number_of_philosophers)
-	{
-		pthread_mutex_unlock(&mutex);
-		return (1);
-	}
-	pthread_mutex_unlock(&mutex);
-	return (0);
+	int result;
+
+	result = 0;
+	pthread_mutex_lock(mutex);
+	if (variable == number_of_philosophers)
+		result = 1;
+	pthread_mutex_unlock(mutex);
+	return (result);
 }

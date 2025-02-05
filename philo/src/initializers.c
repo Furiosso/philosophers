@@ -63,6 +63,7 @@ pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
 		}
 		i++;
 	}
+	//considerar si renta convertir la variable start_time en un miembro de table
 	return (threads);
 }
 
