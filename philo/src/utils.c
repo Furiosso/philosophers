@@ -64,13 +64,22 @@ char	ft_isnumber(char *str)
 	int		i;
 
 	i = 0;
-	while (str[i] == ' ' || (*str > 8 && *str < 14))
+	while (str[i] == ' ' || (str[i] > 8 && str[i] < 14))
 		i++;
 	if (str[i] == '+')
 		i++;
-	if (!ft_isdigit(str[i]))
+	while (ft_isdigit(str[i]))
+		i++;
+	if (str[i] && str[i] != ' ' && !(str[i] < 8 && str[i] > 14))
 	{
-		ft_print_error("Only numbers allowed\n");
+		ft_print_error("Only positive numbers allowed\n");
+		return (0);
+	}
+	while (str[i] == ' ' || (str[i] > 8 && str[i] < 14))
+		i++;
+	if (str[i] && str[i] != ' ' && !(str[i] < 8 && str[i] > 14))
+	{
+		ft_print_error("Only positive numbers allowed\n");
 		return (0);
 	}
 	return (1);
