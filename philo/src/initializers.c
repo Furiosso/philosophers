@@ -12,6 +12,19 @@
 
 #include "../include/philo.h"
 
+int	ft_start_mutex(t_mutex mutex, t_mutex *forks, int key)
+{
+	if (pthread_mutex_init(&mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		while (key > -1)
+			pthread_mutex_destroy(&forks[key--]);
+		free(forks);
+		return (0);
+	}
+	return (1);
+}
+
 static t_mutex	*initialize_mutexes(t_table *table)
 {
 	t_mutex	*forks;

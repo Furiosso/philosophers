@@ -16,7 +16,8 @@ size_t	get_time(void)
 {
 	struct timeval	timer;
 
-	gettimeofday(&timer, NULL);
+	if (gettimeofday(&timer, NULL) < 0)
+		return (0);
 	return (timer.tv_sec * 1000 + timer.tv_usec / 1000);
 }
 /*
@@ -47,3 +48,33 @@ void	*check_death(void *arg)
 	}
 	return (NULL);
 }*/
+
+size_t	wait_for_everyone_to_be_ready(t_table *table)
+{
+	t_mutex	*mutex;
+	size_t	everyone_is_ready;
+	size_t	number_of_philosophers;
+	size_t	start_time;
+
+	mutex = &table->everyone_is_ready_mutex;
+	number_of_philosophers = table->number_of_philosophers;
+	everyone_is_ready = table->everyone_is_ready;
+	while(check_mutex(mutex, everyone_is_ready, number_of_philosophers))
+		;
+	start_time = get_time();
+	if (!start_time)
+		return (0);
+	return (start_time);
+}
+
+size_t	check_last_meal(size_t time_to_die, size_t timer, t_philos *philosopher)
+{
+	int		result;
+
+	result = 0;
+	pthread_mutex_lock(philosopher->last_meal_mutex);
+	if (time_to_die <= (timer - philosopher->last_meal))
+		result = 1;
+	pthread_mutex_unlock(philosopher->last_meal_mutex);
+	return (result);
+}

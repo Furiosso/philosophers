@@ -31,6 +31,7 @@ typedef struct s_table
 	size_t		time_to_eat;
 	size_t		time_to_sleep;
 	int			time_to_think;
+	//t_mutex		time_to_die_mutex;
 	t_mutex		*forks;
 	t_mutex		are_done_mutex;
 	t_mutex		is_someone_dead_mutex;
@@ -47,11 +48,13 @@ typedef struct s_philos
 	pthread_t		*thread;
 	size_t			start_time;
 	size_t			last_meal;
+	//size_t			time_to_die;
 	//pthread_mutex_t	*fmutex;
 	//int				forks;
 	size_t			has_had_first_meal;
 	t_mutex	*left_fork;
 	t_mutex	*right_fork;
+	t_mutex	*last_meal_mutex;
 	char			is_left_locked;
 	char			is_right_locked;
 	char			is_done;
@@ -61,6 +64,7 @@ typedef struct s_philos
 
 t_table		*check_args(int argc, char **argv);
 int			check_if_someone_is_dead(t_table *table);
+size_t		check_last_meal(size_t time_to_die, size_t timer, t_philos *philosopher);
 int			check_mutex(t_mutex *mutex, size_t variable, size_t number_of_philosophers);
 //void		*check_death(void *arg);
 size_t		get_time(void);
@@ -80,5 +84,6 @@ pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks);
 //char		lock_forks(t_philos *philosopher);
 void		*routine(void *arg);
 void		unlock_forks(t_philos *philosopher);
+size_t		wait_for_everyone_to_be_ready(t_table *table);
 
 #endif

@@ -29,18 +29,36 @@ void		lock_forks(t_mutex *left_fork, t_mutex *right_fork, int id)
 }
 */
 
-int	ft_start_mutex(t_mutex mutex, t_mutex *forks, int key)
+int	check_if_someone_is_dead(t_table *table)
 {
-	if (pthread_mutex_init(&mutex, NULL))
-	{
-		ft_print_error("Could not initialize mutex\n");
-		while (key > -1)
-			pthread_mutex_destroy(&forks[key--]);
-		free(forks);
-		return (0);
-	}
-	return (1);
+	int result;
+
+	result = 0;
+	pthread_mutex_lock(&table->is_someone_dead_mutex);
+	if (table->is_someone_dead)
+		result = 1;
+	pthread_mutex_unlock(&table->is_someone_dead_mutex);
+	return (result);
 }
+
+int	check_mutex(t_mutex *mutex, size_t variable, size_t number_of_philosophers)
+{
+	int result;
+
+	result = 0;
+	pthread_mutex_lock(mutex);
+	if (variable == number_of_philosophers)
+		result = 1;
+	pthread_mutex_unlock(mutex);
+	return (result);
+}
+
+/*void	lock_mutex(t_mutex *mutex)
+{
+	pthread_mutex_lock(mutex);
+	philosopher->table->everyone_is_ready++;
+	pthread_mutex_unlock(mutex);
+}*/
 
 void	unlock_forks(t_philos *philosopher)
 {

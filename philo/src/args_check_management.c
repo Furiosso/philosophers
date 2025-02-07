@@ -46,6 +46,7 @@ static t_table	*fill_table(char **argv)
 			return (ft_print_error_and_free("Invalid value found\n", table));
 	}
 	table->is_someone_dead = 0;
+	table->start_time = 0;
 	table->time_to_think = table->time_to_eat - table->time_to_sleep;
 	return (table);
 }

@@ -114,6 +114,7 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 	//printf("adios xd\n");
 	size_t	i;
 	size_t	timer;
+
 	//size_t	are_done;
 	//size_t	last_meal[4];
 
@@ -128,11 +129,20 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 	i = 0;
 	//printf("table->are_done: %zu\n", table->are_done);
 	//printf("table->number_of_philosophers: %zu\n", table->number_of_philosophers);
+
+	table->start_time = wait_for_everyone_to_be_ready(table);
 	while (!check_mutex(&table->are_done_mutex, table->are_done, table->number_of_philosophers)/* && !check_if_someone_is_dead(table)*/)//revisar esto
 	//while (table->are_done < table->number_of_philosophers)
 	//while (1)
 	{
 		timer = get_time();
+		if (!timer)
+		{
+			pthread_mutex_lock(&table->is_someone_dead_mutex);
+			table->is_someone_dead = 1;
+			pthread_mutex_unlock(&table->is_someone_dead_mutex);
+			break ;
+		}
 		//if (last_meal[i] != philos[i].last_meal)
 		//{
 		//	last_meal[i] = philos[i].last_meal;
@@ -142,7 +152,8 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 		//printf("philosopher %zu last meal: %zu\n", philos[i].id, philos[i].last_meal);
 		//printf("philosopher.id: %zu\n", philos[i].id);
 		//if (!(philos[i].is_done) && (table->time_to_die <= timer - philos[i].last_meal) || table->are_done == table->number_of_philosophers)
-		if (table->time_to_die <= (timer - philos[i].last_meal))
+		//if (table->time_to_die <= (timer - philos[i].last_meal))
+		if (check_last_meal(table->time_to_die, timer, &philos[i]))
 		{
 			//printf("timer: %zu\n", timer);
 			//printf("last meal: %zu\n", philos[i].last_meal);
@@ -154,7 +165,7 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 			pthread_mutex_lock(&table->is_someone_dead_mutex);
 			table->is_someone_dead = 1;
 			pthread_mutex_unlock(&table->is_someone_dead_mutex);
-			printf("%ld %zu died\n", get_time() - philos[i].start_time, philos[i].id);
+			printf("%ld %zu died\n", get_time() - table->start_time, philos[i].id);
 			break ;
 		}
 		//{
