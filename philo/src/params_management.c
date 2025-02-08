@@ -17,7 +17,6 @@ t_philos	fill_params(t_table *table, t_mutex *forks, int i)
 	t_philos	philosopher;
 
 	philosopher.id = i + 1;
-	//philosopher.thread = thread;
 	philosopher.left_fork = &forks[i];
 	if (philosopher.id == table->number_of_philosophers)
 		philosopher.right_fork = &forks[0];
@@ -28,12 +27,14 @@ t_philos	fill_params(t_table *table, t_mutex *forks, int i)
 	philosopher.time_to_eat = table->time_to_eat;
 	philosopher.time_to_sleep = table->time_to_sleep;
 	philosopher.time_to_think = table->time_to_think;
+	philosopher.table = table;
+	philosopher.time_to_start = philosopher.table->time_to_die;
+	if (philosopher.time_to_eat < philosopher.table->time_to_die)
+		philosopher.time_to_start = philosopher.time_to_eat;
 	philosopher.number_of_times_each_philosopher_must_eat = table->number_of_times_each_philosopher_must_eat;
 	philosopher.is_left_locked = 0;
 	philosopher.is_right_locked = 0;
 	philosopher.has_had_first_meal = 0;
-	philosopher.table = table;
-	philosopher.is_done = 0;
 	return (philosopher);
 }
 

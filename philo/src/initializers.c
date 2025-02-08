@@ -79,7 +79,8 @@ pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
 int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
 {
 	table->forks = ft_start_mutex_array(table);
-	if (!table->forks)
+	table->is_fork_locked = ft_calloc(table->number_of_philosophers, sizeof(size_t));
+	if (!table->forks || !table->is_fork_locked)
 		return (free_stuff(table, philos, NULL));
 	table->last_meal_mutex = ft_start_mutex_array(table);
 	if (!table->last_meal_mutex)
