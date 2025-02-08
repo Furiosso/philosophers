@@ -12,90 +12,107 @@
 
 #include "../include/philo.h"
 
-int	ft_start_mutex(t_mutex mutex, t_mutex *forks, int key)
+int	ft_start_mutex(t_mutex mutex, t_mutex *array, int key)
 {
 	if (pthread_mutex_init(&mutex, NULL))
 	{
-		ft_print_error("Could not initialize mutex\n");
 		while (key > -1)
-			pthread_mutex_destroy(&forks[key--]);
-		free(forks);
-		return (0);
+			pthread_mutex_destroy(&array[key--]);
+		free(array);
+		return (ft_print_error("Could not initialize mutex\n"));
 	}
 	return (1);
 }
 
-static t_mutex	*initialize_mutexes(t_table *table)
+static int	initialize_mutexes(t_table *table)
 {
-	t_mutex	*forks;
-	size_t	i;
-
-	forks = ft_calloc(table->number_of_philosophers, sizeof(t_mutex));
-	if (!forks)
-		return (NULL);
-	i = 0;
-	while (i < table->number_of_philosophers)
+	if (pthread_mutex_init(&table->are_done_mutex, NULL))
 	{
-		if (!ft_start_mutex(forks[i], forks, i))
-			return (NULL);
-		i++;
+		ft_print_error("Could not initialize mutex\n");
+		return (destroy_forks_and_last_meal_mutexes(table));
 	}
-	i = table->number_of_philosophers - 1;
-	if (!ft_start_mutex(table->are_done_mutex, forks, i))
-		return (NULL);
-	if (!ft_start_mutex(table->is_someone_dead_mutex, forks, i))//revisar que los mutex se destruyan si no estan inicializados
-		return (NULL);
-	if (!ft_start_mutex(table->everyone_is_ready_mutex, forks, i))
-		return (NULL);
-	return (forks);
+	if (pthread_mutex_init(&table->is_someone_dead_mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		pthread_mutex_destroy(&table->are_done_mutex);
+		return (destroy_forks_and_last_meal_mutexes(table));
+	}
+	if (pthread_mutex_init(&table->everyone_is_ready_mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		pthread_mutex_destroy(&table->are_done_mutex);
+		pthread_mutex_destroy(&table->is_someone_dead_mutex);
+		return (destroy_forks_and_last_meal_mutexes(table));
+	}
+	return (1);
 }
 
 pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
 {
-	int			i;
+	int		i;
 	pthread_t	*threads;
 
 	threads = ft_calloc(table->number_of_philosophers, sizeof(pthread_t));
 	if (!threads)
+	{
+		ft_print_error("Could not allocate memory\n");
 		return (NULL);
+	}
 	i = 0;
-	while (i < (int)table->number_of_philosophers)
+	while ((size_t)i < table->number_of_philosophers)
 	{
 		philos[i] = fill_params(table, forks, i);
 		if (pthread_create(&threads[i], NULL, &routine, &philos[i]))
 		{
-			ft_print_error("Thread couldn't be created\n");
+			cut_the_threads(table);
 			while (--i > -1)
-				pthread_detach(threads[i]);//revisar esto
-			while (++i < (int)table->number_of_philosophers)
-				pthread_mutex_destroy(&forks[i]);
-			pthread_mutex_destroy(&table->are_done_mutex);
-			pthread_mutex_destroy(&table->is_someone_dead_mutex);
-			pthread_mutex_destroy(&table->everyone_is_ready_mutex);
+				pthread_join(threads[i], NULL);
+			ft_print_error("Thread couldn't be created\n");
+			free(threads);
 			return (NULL);
 		}
 		i++;
 	}
-	//considerar si renta convertir la variable start_time en un miembro de table
 	return (threads);
 }
 
 int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
 {
-	table->forks = initialize_mutexes(table);
+	table->forks = ft_start_mutex_array(table);
 	if (!table->forks)
+		return (free_stuff(table, philos, NULL));
+	table->last_meal_mutex = ft_start_mutex_array(table);
+	if (!table->last_meal_mutex)
 	{
-		free_stuff(table, philos, NULL, NULL);
-		return (0);
+		destroy_mutex_array(table->forks, table->number_of_philosophers);
+		return (free_stuff(table, philos, NULL));
 	}
+	if (!initialize_mutexes(table))
+		return (free_stuff(table, philos, NULL));
 	table->threads = initialize_threads(table, philos, table->forks);
 	if (!table->threads)
 	{
-		free_stuff(table, philos, table->forks, NULL);
-		return (0);
+		destroy_forks_and_last_meal_mutexes(table);
+		pthread_mutex_destroy(&table->are_done_mutex);
+		pthread_mutex_destroy(&table->is_someone_dead_mutex);
+		pthread_mutex_destroy(&table->everyone_is_ready_mutex);
+		return (free_stuff(table, philos, NULL));
 	}
 	return (1);
 }
+/*
+t_philos	free_last_meal_mutexes(t_philos *philos, size_t number_of_philosophers)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < number_of_philosophers)
+	{
+		free(philos[i].last_meal_mutex);
+		i++;
+	}
+	return (NULL);
+}*/
 
 t_philos	*initialize_philos(t_table *table)
 {
@@ -104,7 +121,10 @@ t_philos	*initialize_philos(t_table *table)
 
 	philos = ft_calloc(table->number_of_philosophers, sizeof(t_philos));
 	if (!philos)
+	{
+		ft_print_error("Could not allocate memory\n");
 		return (NULL);
+	}
 	i  = 0;
 	while (i < table->number_of_philosophers)
 	{

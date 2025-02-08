@@ -73,3 +73,43 @@ void	unlock_forks(t_philos *philosopher)
 		philosopher->is_right_locked = 0;
 	}
 }
+
+void	destroy_mutex_array(t_mutex *mutex, size_t number_of_philosophers)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < number_of_philosophers)
+	{
+		pthread_mutex_destroy(&mutex[i]);
+		i++;
+	}
+}
+
+int	destroy_forks_and_last_meal_mutexes(t_table *table)
+{
+	destroy_mutex_array(table->forks, table->number_of_philosophers);
+	destroy_mutex_array(table->last_meal_mutex, table->number_of_philosophers);
+	return (0);
+}
+
+t_mutex	*ft_start_mutex_array(t_table *table/*, t_mutex *mutex*/)
+{
+	t_mutex	*mutex;
+	size_t	i;
+	
+	mutex = ft_calloc(table->number_of_philosophers, sizeof(t_mutex));
+	if (!mutex)
+	{
+		ft_print_error("Could not allocate memory\n");
+		return (NULL);
+	}
+	i = 0;
+	while (i < table->number_of_philosophers)
+	{
+		if (!ft_start_mutex(mutex[i], mutex, i))
+			return (NULL);
+		i++;
+	}
+	return (mutex);
+}

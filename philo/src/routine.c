@@ -20,9 +20,6 @@ void	*routine(void *arg)
 {
 	t_philos	*philosopher;
 	size_t		cycles;
-	//char			is_dead;
-	//pthread_t		thread;
-	//struct timeval	last_meal;
 
 	philosopher = (t_philos *)arg;
 	cycles = philosopher->table->number_of_times_each_philosopher_must_eat;
@@ -30,12 +27,13 @@ void	*routine(void *arg)
 	//printf("In the thread: %zu\n", philosopher.id);
 	//philosopher.last_meal = get_time();
 	//lock_mutex(&philosopher->table->everyone_is_ready_mutex);
-	pthread_mutex_init(philosopher->last_meal_mutex, NULL);
+	//pthread_mutex_init(philosopher->last_meal_mutex, NULL);
 	pthread_mutex_lock(&philosopher->table->everyone_is_ready_mutex);
 	philosopher->table->everyone_is_ready++;
 	pthread_mutex_unlock(&philosopher->table->everyone_is_ready_mutex);
 	//printf("philosopher %zu is ready: %zu\n", philosopher->id, philosopher->table->everyone_is_ready);
 	philosopher->start_time = wait_for_everyone_to_be_ready(philosopher->table);
+	check_if_someone_is_dead(philosopher->table);
 	//	printf("philosopher %zu is ready: %zu\n", philosopher->id, philosopher->table->everyone_is_ready);
 	pthread_mutex_lock(philosopher->last_meal_mutex);
 	philosopher->last_meal = philosopher->start_time;
@@ -46,7 +44,7 @@ void	*routine(void *arg)
 	//philosopher.last_meal = last_meal.tv_usec / 1000;
 	//printf("%ld %zu is thinking\n", philosopher.last_meal, philosopher.id);
 	printf("0 %zu is thinking\n", philosopher->id);
-	if (philosopher->id % 2 == 0 && philosopher->table->time_to_think > 0)
+	if (philosopher->id % 2 == 0 && philosopher->time_to_think > 0)
 		usleep(philosopher->table->time_to_eat * 1000);
 	//is_dead = 0;
 	if (!cycles)
@@ -56,14 +54,10 @@ void	*routine(void *arg)
 			//is_dead = cycle(&philosopher);
 			//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
 			if (!cycle(philosopher))
-			{
-				pthread_mutex_destroy(philosopher->last_meal_mutex);
 				return (NULL);
-			}
 			//if (pthread_join(thread, NULL) != 0)
 			//	return (0);
 		}
-		pthread_mutex_destroy(philosopher->last_meal_mutex);
 		return (NULL);
 	}
 	while (cycles-- && !check_if_someone_is_dead(philosopher->table))
@@ -71,10 +65,7 @@ void	*routine(void *arg)
 		//if (pthread_create(&thread, NULL, &check_death, &philosopher) != 0)
 		//	return (0);
 		if (!cycle(philosopher))
-		{
-			pthread_mutex_destroy(philosopher->last_meal_mutex);
 			return (NULL);
-		}
 		//if (!cycle(&philosopher))
 			//return (NULL);
 		//if (pthread_join(thread, NULL) != 0)
@@ -86,7 +77,6 @@ void	*routine(void *arg)
 	pthread_mutex_lock(&philosopher->table->are_done_mutex);
 	philosopher->table->are_done++;
 	pthread_mutex_unlock(&philosopher->table->are_done_mutex);
-	pthread_mutex_destroy(philosopher->last_meal_mutex);
 	return (NULL);
 }
 
@@ -100,8 +90,8 @@ static int	cycle(t_philos *philosopher)
 
 	//time_to_die = philosopher->table->time_to_die;
 	//philosopher->table->are_done++;
-	time_to_eat = philosopher->table->time_to_eat;
-	time_to_sleep = philosopher->table->time_to_sleep;
+	time_to_eat = philosopher->time_to_eat;
+	time_to_sleep = philosopher->time_to_sleep;
 	start_time = philosopher->start_time;
 	if (check_if_someone_is_dead(philosopher->table))
 		return (0);
@@ -141,7 +131,7 @@ static int	cycle(t_philos *philosopher)
 	if (check_if_someone_is_dead(philosopher->table))
 		return (0);
 	//philosopher->is_left_locked = 0;
-	timer = get_time() - philosopher->start_time;
+	timer = get_time() - start_time;
 	printf ("%ld %zu is sleeping\n", get_time() - start_time, philosopher->id);
 	/*if (time_to_eat + time_to_sleep >= time_to_die)
 	{
@@ -166,8 +156,8 @@ static int	cycle(t_philos *philosopher)
 	//printf ("timer when cycle ends: %zu\n", get_time() - start_time);
 	if (check_if_someone_is_dead(philosopher->table))
 		return (0);
-	printf("%ld %zu is thinking\n", get_time() - philosopher->start_time, philosopher->id);
-	if (philosopher->table->time_to_think > 0 && philosopher->table->number_of_philosophers % 2 == 1)
+	printf("%ld %zu is thinking\n", get_time() - start_time, philosopher->id);
+	if (philosopher->time_to_think > 0 && philosopher->number_of_philosophers % 2 == 1)
 		usleep (philosopher->table->time_to_think * 1000);
 	return (1);
 }
@@ -188,7 +178,7 @@ static int	take_forks(t_philos *philosopher)
 	//	(philosopher->time_to_eat * 2 >= philosopher->time_to_die && philosopher->number_of_philosophers % 2 == 1 && philosopher->id == philosopher->number_of_philosophers - 1))
 	//{
 	//philosopher->has_had_first_meal = 1;
-	if (philosopher->id != philosopher->table->number_of_philosophers)
+	if (philosopher->id != philosopher->number_of_philosophers)
 	{
 		if (check_if_someone_is_dead(philosopher->table))
 			return (0);

@@ -12,10 +12,11 @@
 
 #include "../include/philo.h"
 
-void	ft_print_error(char *str)
+int	ft_print_error(char *str)
 {
 	write(2, "Error:\n", 7);
 	write(2, str, ft_strlen(str));
+	return (0);
 }
 
 static t_table	*ft_print_error_and_free(char *str, t_table *table)
@@ -31,7 +32,10 @@ static t_table	*fill_table(char **argv)
 
 	table = ft_calloc(1, sizeof(t_table));
 	if (!table)
+	{
+		ft_print_error("Could not allocate memory\n");
 		return (NULL);
+	}
 	table->number_of_philosophers = ft_atol(argv[1]);
 	table->time_to_die = ft_atol(argv[2]);
 	table->time_to_eat = ft_atol(argv[3]);
@@ -45,8 +49,8 @@ static t_table	*fill_table(char **argv)
 		if (!table->number_of_times_each_philosopher_must_eat)
 			return (ft_print_error_and_free("Invalid value found\n", table));
 	}
+	table->everyone_is_ready = 0;
 	table->is_someone_dead = 0;
-	table->start_time = 0;
 	table->time_to_think = table->time_to_eat - table->time_to_sleep;
 	return (table);
 }

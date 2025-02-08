@@ -12,9 +12,37 @@
 
 #include "../include/philo.h"
 
-static void				join_threads(pthread_t *threads, t_mutex *forks, t_table *table);
+static void	join_threads(pthread_t *threads, t_table *table);
 static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, t_mutex *forks*/);
 //static void	detach_threads(t_table *table, t_philos *philos, t_mutex *forks);
+
+static void	*one_philo_run(void *arg)
+{
+	size_t	time_to_die;
+
+	time_to_die = *(size_t *)arg;
+	printf("0 1 is thinking\n");
+	printf("0 1 has taken a fork\n");
+	usleep(time_to_die * 1000);
+	printf("%zu 1 died\n", time_to_die);
+	return (NULL);
+}
+
+static int	execute_one_philosopher(t_table *table)
+{
+	pthread_t	thread;
+	size_t		time_to_die;
+
+	time_to_die = table->time_to_die;
+	free(table);
+	if (pthread_create(&thread, NULL, &one_philo_run, &time_to_die))
+	{
+		ft_print_error("Could not create thread\n");
+		return (2);
+	}
+	pthread_join(thread, NULL);
+	return (0);
+}
 
 int	main(int argc, char **argv)
 {
@@ -24,28 +52,36 @@ int	main(int argc, char **argv)
 	table = check_args(argc, argv);
 	if (!table)
 		return (1);
+	if (table->number_of_philosophers == 1)
+		return (execute_one_philosopher(table));
 	philos = initialize_philos(table);
 	if (!philos)
 	{
 		free(table);
-		return (2);
+		return (3);
 	}
 	if (!initialize_mutex_and_threads(table, philos))
-		return (3);
+		return (4);
 	check_death(table, philos/*, threads, forks*/);
-	join_threads(table->threads, table->forks, table);
-	free_stuff(table, philos, table->forks, table->threads);
+	join_threads(table->threads, table);
+	free_stuff(table, philos, table->threads);
 }
 
-void	free_stuff(t_table *t, t_philos *ph, t_mutex *f, pthread_t *th)
+int	free_stuff(t_table *t, t_philos *ph, pthread_t *th)
 {
+	/*int	i;
+
+	i = 0;*/
 	if (th)
 		free(th);
-	if (f)
-		free(f);
+	if (t->forks)
+		free(t->forks);
+	if (t->last_meal_mutex)
+		free(t->last_meal_mutex);
 	if (ph)
 		free(ph);
 	free(t);
+	return (0);
 }
 /*
 static void	*routine(void *arg)
@@ -87,33 +123,26 @@ static void	*routine(void *arg)
 	return (NULL);
 }*/
 
-static void	join_threads(pthread_t *threads, t_mutex *forks, t_table *table)
+static void	join_threads(pthread_t *threads, t_table *table)
 {
 	size_t	i;
 
 	i = 0;
 	while (i < table->number_of_philosophers)
-	{
-		if (pthread_join(threads[i++], NULL) != 0)
-			break ;
-	}
+		pthread_join(threads[i++], NULL);
 	i = 0;
-	while (i < table->number_of_philosophers)
-	{
-		if (pthread_mutex_destroy(&forks[i++]) != 0)
-			return ;
-	}
-	if (pthread_mutex_destroy(&table->are_done_mutex) != 0)
-		return ;
-	if (pthread_mutex_destroy(&table->is_someone_dead_mutex) != 0)
-		return ;
+	destroy_forks_and_last_meal_mutexes(table);
+	pthread_mutex_destroy(&table->are_done_mutex);
+	pthread_mutex_destroy(&table->is_someone_dead_mutex);
+	pthread_mutex_destroy(&table->everyone_is_ready_mutex);
 }
 
 static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, t_mutex *forks*/)
 {
 	//printf("adios xd\n");
 	size_t	i;
-	size_t	timer;
+	long	timer;
+	int		is_someone_dead;
 
 	//size_t	are_done;
 	//size_t	last_meal[4];
@@ -129,14 +158,23 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 	i = 0;
 	//printf("table->are_done: %zu\n", table->are_done);
 	//printf("table->number_of_philosophers: %zu\n", table->number_of_philosophers);
-
+	is_someone_dead = 0;
 	table->start_time = wait_for_everyone_to_be_ready(table);
-	while (!check_mutex(&table->are_done_mutex, table->are_done, table->number_of_philosophers)/* && !check_if_someone_is_dead(table)*/)//revisar esto
+	//while (!check_mutex(&table->are_done_mutex, table->are_done, table->number_of_philosophers)/* && !check_if_someone_is_dead(table)*/)//revisar esto
 	//while (table->are_done < table->number_of_philosophers)
-	//while (1)
+	while (1)
 	{
+		pthread_mutex_lock(&table->are_done_mutex);
+		//printf("table->are_done: %zu\n", table->are_done);
+		if (table->are_done == table->number_of_philosophers)
+		{
+			pthread_mutex_unlock(&table->are_done_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&table->are_done_mutex);
+		//printf("hola\n");
 		timer = get_time();
-		if (!timer)
+		if (timer < 0)
 		{
 			pthread_mutex_lock(&table->is_someone_dead_mutex);
 			table->is_someone_dead = 1;
@@ -153,8 +191,17 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 		//printf("philosopher.id: %zu\n", philos[i].id);
 		//if (!(philos[i].is_done) && (table->time_to_die <= timer - philos[i].last_meal) || table->are_done == table->number_of_philosophers)
 		//if (table->time_to_die <= (timer - philos[i].last_meal))
-		if (check_last_meal(table->time_to_die, timer, &philos[i]))
+		pthread_mutex_lock(philos[i].last_meal_mutex);
+		if (table->time_to_die <= (timer - philos[i].last_meal))
+			is_someone_dead = 1;
+		pthread_mutex_unlock(philos[i].last_meal_mutex);
+		//if (timer && check_last_meal(table->time_to_die, timer, &philos[i]))
+		pthread_mutex_lock(philos[i].last_meal_mutex);
+		printf("is someone dead: %d | time: %zu\n", is_someone_dead, (timer - table->start_time));
+		pthread_mutex_unlock(philos[i].last_meal_mutex);
+		if (is_someone_dead)
 		{
+			printf("timer - philos[%zu].last_meal: %zu\n", philos[i].id, timer - philos[i].last_meal);
 			//printf("timer: %zu\n", timer);
 			//printf("last meal: %zu\n", philos[i].last_meal);
 			//printf("timer - philos[%zu].last_meal: %zu\n", philos[i].id, timer - philos[i].last_meal);
@@ -165,7 +212,7 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 			pthread_mutex_lock(&table->is_someone_dead_mutex);
 			table->is_someone_dead = 1;
 			pthread_mutex_unlock(&table->is_someone_dead_mutex);
-			printf("%ld %zu died\n", get_time() - table->start_time, philos[i].id);
+			printf("%ld %zu died here\n", get_time() - table->start_time, philos[i].id);
 			break ;
 		}
 		//{
