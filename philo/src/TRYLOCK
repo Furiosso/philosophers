@@ -1,0 +1,336 @@
+
+	/*int		has_taken_a_fork[2];
+
+	has_taken_a_fork[0] = 0;
+	has_taken_a_fork[1] = 0;
+	if (check_if_someone_is_dead(philosopher->table))
+		return (0);
+	while (!has_taken_a_fork[0] && !has_taken_a_fork[1])
+	{
+		pthread_mutex_lock(philosopher->left_fork_mutex);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			pthread_mutex_unlock(philosopher->left_fork_mutex);
+			unlock_forks(philosopher);
+			return (0);
+		}
+		if (!*philosopher->is_left_locked)
+		{
+			*philosopher->is_left_locked = 1;
+			has_taken_a_fork[0] = 1;
+		}
+		pthread_mutex_unlock(philosopher->left_fork_mutex);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			unlock_forks(philosopher);
+			return (0);
+		}
+		if (has_taken_a_fork[0])
+			break ;
+		pthread_mutex_lock(philosopher->right_fork_mutex);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			pthread_mutex_unlock(philosopher->right_fork_mutex);
+			unlock_forks(philosopher);
+			return (0);
+		}
+		if (!*philosopher->is_right_locked)
+		{
+			*philosopher->is_right_locked = 1;
+			has_taken_a_fork[1] = 1;
+		}
+		pthread_mutex_unlock(philosopher->right_fork_mutex);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			unlock_forks(philosopher);
+			return (0);
+		}
+	}
+	if (has_taken_a_fork[0])
+	{
+		pthread_mutex_lock(philosopher->left_fork);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			unlock_forks(philosopher);
+			return (0);
+		}
+		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
+		pthread_mutex_lock(philosopher->right_fork);
+		pthread_mutex_lock(philosopher->right_fork_mutex);
+		*philosopher->is_right_locked = 1;
+		pthread_mutex_unlock(philosopher->right_fork_mutex);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			unlock_forks(philosopher);
+			return (0);
+		}
+		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
+	}
+	else
+	{
+		pthread_mutex_lock(philosopher->right_fork);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			unlock_forks(philosopher);
+			return (0);
+		}
+		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
+		pthread_mutex_lock(philosopher->left_fork);
+		pthread_mutex_lock(philosopher->left_fork_mutex);
+		*philosopher->is_left_locked = 1;
+		pthread_mutex_unlock(philosopher->left_fork_mutex);
+		if (check_if_someone_is_dead(philosopher->table))
+		{
+			unlock_forks(philosopher);
+			return (0);
+		}
+		printf("%ld %zu has taken a fork\n", get_time() - philosopher->start_time, philosopher->id);
+	}*/
+	//if (philosopher->id == philosopher->num_of_philos)
+
+/*void	unlock_forks(t_mutex *first_fork, t_mutex *second_fork)
+{
+	//int is_locked[2];
+
+	//is_locked[1] = 0;
+	//pthread_mutex_lock(philosopher->right_fork_mutex);
+	//if (philosopher->is_right_locked)
+	//	is_locked[1] = 1;
+	//pthread_mutex_unlock(philosopher->right_fork_mutex);
+	//if (is_locked[1])
+	//{
+		pthread_mutex_unlock(first_fork);
+		//pthread_mutex_lock(philosopher->right_fork_mutex);
+		//philosopher->is_right_locked = 0;
+		//pthread_mutex_unlock(philosopher->right_fork_mutex);
+	//}
+	//is_locked[0] = 0;
+	//pthread_mutex_lock(philosopher->left_fork_mutex);
+	//if (philosopher->is_left_locked)
+	//	is_locked[0] = 1;
+	//pthread_mutex_unlock(philosopher->left_fork_mutex);
+	//if (is_locked[0])
+	//{
+		pthread_mutex_unlock(second_fork);
+		//pthread_mutex_lock(philosopher->left_fork_mutex);
+		//philosopher->is_left_locked = 0;
+		//pthread_mutex_unlock(philosopher->left_fork_mutex);
+	//}
+}
+#ifndef PHILO_H
+# define PHILO_H
+# include <stdio.h>
+# include <stdlib.h>
+# include <sys/time.h>
+# include <unistd.h>
+# include <pthread.h>
+
+typedef pthread_mutex_t	t_mutex;
+
+typedef struct s_table
+{
+	int			is_someone_dead;
+	size_t		are_done;
+	size_t		everyone_is_ready;
+	size_t		num_of_philos;
+	long		start_time;
+	long		time_to_die;
+	long		time_to_eat;
+	long		time_to_sleep;
+	int			*is_fork_locked;
+	int			time_to_think;
+	//int			*is_done;
+	//t_mutex		*is_done_mutex;
+	t_mutex		*forks;
+	t_mutex		*last_meal_mutex;
+	t_mutex		*is_fork_locked_mutex;
+	t_mutex		are_done_mutex;
+	t_mutex		is_someone_dead_mutex;
+	t_mutex		start_time_mutex;
+	size_t		num_of_cycles;
+	pthread_t	*threads;
+}	t_table;
+
+typedef struct s_philo
+{
+	size_t	id;
+	long	start_time;
+	long	last_meal;
+	size_t	num_of_philos;
+	long	time_to_eat;
+	long	time_to_sleep;
+	long	time_to_think;
+	size_t	time_to_start;
+	size_t	num_of_cycles;
+	t_mutex	*left_fork;
+	t_mutex	*right_fork;
+	//t_mutex	*left_fork_mutex;
+	//t_mutex	*right_fork_mutex;
+	t_mutex	*last_meal_mutex;
+	//t_mutex *is_done_mutex;
+	//int		*is_left_locked;
+	//int		*is_right_locked;
+	//int		is_done;
+	//int		is_left_locked;
+	//int		is_right_locked;
+	t_table	*table;
+}	t_philo;
+
+t_table		*check_args(int argc, char **argv);
+void		check_death(t_table *table, t_philo *philos);
+int			check_if_someone_is_dead(t_table *table);
+size_t		check_last_meal(size_t time_to_die, size_t timer, t_philo *philo);
+int			check_mutex(t_mutex *mutex, size_t variable, size_t num_of_philos);
+void		cut_the_threads(t_table *table);
+int			destroy_every_mutex(t_table *table);
+int			destroy_forks_and_last_meal_mutexes(t_table *table);
+void		destroy_mutex_array(t_mutex *mutex, size_t num_of_philos);
+int			eating(t_philo *philosopher);
+long		get_time(void);
+t_philo		fill_params(t_table *table, t_mutex *forks, int i);
+int			free_stuff(t_table *t, t_philo *ph, pthread_t *th);
+size_t		ft_atol(const char *str);
+void		*ft_calloc(size_t count, size_t size);
+char		ft_isnumber(char *str);
+int			ft_start_mutex(t_mutex mutex, t_mutex *forks, int key);
+t_mutex		*ft_start_mutex_array(t_table *table/*, t_mutex *forks*);
+size_t		ft_strlen(const char *str);
+int			ft_print_error(char *str);
+int			initialize_mutex_and_threads(t_table *table, t_philo *philos);
+t_philo		*initialize_philos(t_table *table);
+pthread_t	*init_threads(t_table *table, t_philo *philos, t_mutex *forks);
+//void		join_threads(t_philo *params, int num_of_philos);
+//void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
+//char		lock_forks(t_philo *philosopher);
+void		*routine(void *arg);
+int			sleeping(t_philo *philosopher);
+int			take_forks(t_mutex *firstfork, t_mutex *secondfork, t_philo *philo);
+int			take_forks_and_eat(t_philo *philosopher);
+int			timekeeper(long time, int has_to_check_death, t_table *table);
+void		unlock_forks(t_philo *philosopher);
+long 		wait_for_everyone_to_be_ready(t_table *table);
+
+#endif
+static int	initialize_mutexes(t_table *table)
+{
+	//size_t	nof;
+
+	//nof = table->num_of_philos;
+	if (pthread_mutex_init(&table->are_done_mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
+		//destroy_mutex_array(table->is_done_mutex, nof);
+		return (destroy_forks_and_last_meal_mutexes(table));
+	}
+	if (pthread_mutex_init(&table->is_someone_dead_mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		pthread_mutex_destroy(&table->are_done_mutex);
+		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
+		//destroy_mutex_array(table->is_done_mutex, nof);
+		return (destroy_forks_and_last_meal_mutexes(table));
+	}
+	if (pthread_mutex_init(&table->start_time_mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		pthread_mutex_destroy(&table->are_done_mutex);
+		pthread_mutex_destroy(&table->is_someone_dead_mutex);
+		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
+		//destroy_mutex_array(table->is_done_mutex, nof);
+		return (destroy_forks_and_last_meal_mutexes(table));
+	}
+	return (1);
+int	initialize_mutex_and_threads(t_table *table, t_philo *philos)
+{
+	table->forks = ft_start_mutex_array(table);
+	if (!table->forks)
+		return (free_stuff(table, philos, NULL));
+	table->last_meal_mutex = ft_start_mutex_array(table);
+	if (!table->last_meal_mutex)
+	{
+		destroy_mutex_array(table->forks, table->num_of_philos);
+		return (free_stuff(table, philos, NULL));
+	}
+	/*table->is_fork_locked_mutex = ft_start_mutex_array(table);
+	if (!table->is_fork_locked_mutex)
+	{
+		destroy_forks_and_last_meal_mutexes(table);
+		return (free_stuff(table, philos, NULL));
+	}
+	table->is_done_mutex = ft_start_mutex_array(table);
+	if (!table->is_done_mutex)
+	{
+		destroy_forks_and_last_meal_mutexes(table);
+		return (free_stuff(table, philos, NULL));
+	}
+	if (!initialize_mutexes(table))
+		return (free_stuff(table, philos, NULL));
+	table->threads = init_threads(table, philos, table->forks);
+	if (!table->threads)
+	{
+		destroy_every_mutex(table);
+		return (free_stuff(table, philos, NULL));
+	}
+	return (1);
+}
+}
+int	free_stuff(t_table *t, t_philo *ph, pthread_t *th)
+{
+	/*int	i;
+
+	i = 0;
+	if (th)
+		free(th);
+	if (t->forks)
+		free(t->forks);
+	//if (t->is_fork_locked)
+	//	free(t->is_fork_locked);
+	//if (t->is_done)
+	//	free(t->is_done);
+	//if (t->is_done_mutex)
+	//	free(t->is_done_mutex);
+	if (t->last_meal_mutex)
+		free(t->last_meal_mutex);
+	//if (t->is_fork_locked_mutex)
+	//	free(t->is_fork_locked_mutex);
+	if (ph)
+		free(ph);
+	free(t);
+	return (0);
+}
+t_philo	fill_params(t_table *table, t_mutex *forks, int i)
+{
+	t_philo	philosopher;
+
+	philosopher.id = i + 1;
+	philosopher.left_fork = &forks[i];
+	//philosopher.left_fork_mutex = &table->is_fork_locked_mutex[i];
+	//philosopher.is_left_locked = &table->is_fork_locked[i];
+	philosopher.right_fork = &forks[i + 1];
+	//philosopher.right_fork_mutex = &table->is_fork_locked_mutex[i + 1];
+	//philosopher.is_right_locked = &table->is_fork_locked[i + 1];
+	if (philosopher.id == table->num_of_philos)
+	{
+		philosopher.right_fork = &forks[0];
+		//philosopher.right_fork_mutex = &table->is_fork_locked_mutex[0];
+		//philosopher.is_right_locked = &table->is_fork_locked[0];
+	}
+	//philosopher.is_done_mutex = &table->are_done_mutex;
+	philosopher.last_meal_mutex = &table->last_meal_mutex[i];
+	philosopher.num_of_philos = table->num_of_philos;
+	philosopher.time_to_eat = table->time_to_eat;
+	philosopher.time_to_sleep = table->time_to_sleep;
+	philosopher.time_to_think = table->time_to_think;
+	if (philosopher.time_to_think == 0)
+		philosopher.time_to_think = philosopher.time_to_eat;
+	philosopher.table = table;
+	philosopher.time_to_start = philosopher.table->time_to_die;
+	if (philosopher.time_to_eat < philosopher.table->time_to_die)
+		philosopher.time_to_start = philosopher.time_to_eat;
+	philosopher.num_of_cycles = table->num_of_cycles;
+	return (philosopher);
+}
+*/
+
+

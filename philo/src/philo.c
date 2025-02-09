@@ -45,13 +45,13 @@ static int	execute_one_philosopher(t_table *table)
 
 int	main(int argc, char **argv)
 {
-	t_philos	*philos;
-	t_table		*table;
+	t_philo	*philos;
+	t_table	*table;
 
 	table = check_args(argc, argv);
 	if (!table)
 		return (1);
-	if (table->number_of_philosophers == 1)
+	if (table->num_of_philos == 1)
 		return (execute_one_philosopher(table));
 	philos = initialize_philos(table);
 	if (!philos)
@@ -61,30 +61,19 @@ int	main(int argc, char **argv)
 	}
 	if (!initialize_mutex_and_threads(table, philos))
 		return (4);
-	check_death(table, philos/*, threads, forks*/);
+	check_death(table, philos);
 	join_threads(table->threads, table);
 	free_stuff(table, philos, table->threads);
 }
 
-int	free_stuff(t_table *t, t_philos *ph, pthread_t *th)
+int	free_stuff(t_table *t, t_philo *ph, pthread_t *th)
 {
-	/*int	i;
-
-	i = 0;*/
 	if (th)
 		free(th);
 	if (t->forks)
 		free(t->forks);
-	//if (t->is_fork_locked)
-	//	free(t->is_fork_locked);
-	//if (t->is_done)
-	//	free(t->is_done);
-	//if (t->is_done_mutex)
-	//	free(t->is_done_mutex);
 	if (t->last_meal_mutex)
 		free(t->last_meal_mutex);
-	//if (t->is_fork_locked_mutex)
-	//	free(t->is_fork_locked_mutex);
 	if (ph)
 		free(ph);
 	free(t);
@@ -96,7 +85,7 @@ static void	join_threads(pthread_t *threads, t_table *table)
 	size_t	i;
 
 	i = 0;
-	while (i < table->number_of_philosophers)
+	while (i < table->num_of_philos)
 		pthread_join(threads[i++], NULL);
 	i = 0;
 	destroy_every_mutex(table);

@@ -1,48 +1,78 @@
 
 #include "../include/philo.h"
 
-void	check_death(t_table *table, t_philos *philos)
+static int	check_if_someone_died(t_philo *philosopher, t_table *table)
+{
+	long	timer;
+	int		result;
+
+	result = 0;
+	timer = get_time();
+	if (!timer)
+		return (-1);
+	pthread_mutex_lock(philosopher->last_meal_mutex);
+	if (table->time_to_die <= (timer - philosopher->last_meal))
+		result = 1;
+	pthread_mutex_unlock(philosopher->last_meal_mutex);
+	return (result);
+}
+
+static int	check_if_philos_are_done(t_table *table)
+{
+	int	result;
+
+	result = 0;
+	pthread_mutex_lock(&table->are_done_mutex);
+	if (table->are_done)
+		result = 1;
+	if (table->are_done == table->num_of_philos)
+	{
+		result = 2;
+	}
+	pthread_mutex_unlock(&table->are_done_mutex);
+	return (result);
+}
+
+static void	finish_loop(t_philo *philo, t_table *table)
+{
+	long	start_time;
+	long	timer;
+
+	start_time = table->start_time;
+	pthread_mutex_lock(&table->is_someone_dead_mutex);
+	table->is_someone_dead = 1;
+	pthread_mutex_unlock(&table->is_someone_dead_mutex);
+	timer = get_time();
+	if (!timer)
+		return ;
+	printf("%ld %zu died\n", timer - start_time, philo->id);
+}
+
+void	check_death(t_table *table, t_philo *philos)
 {
 	size_t	i;
-	long	timer;
-	long	start_time;
 	int		is_someone_dead;
 	int		is_someone_done;
 
 	i = 0;
 	is_someone_dead = 0;
 	is_someone_done = 0;
-	start_time = wait_for_everyone_to_be_ready(table);
-	//printf("start time main: %ld\n", start_time);
-	//printf("table start time: %ld\n", table->start_time);
+	wait_for_everyone_to_be_ready(table);
 	if (!timekeeper(table->time_to_die, 0, NULL))
 		return ;
 	while (1)
 	{
-		timer = get_time();
-		pthread_mutex_lock(philos[i].last_meal_mutex);
-		if (table->time_to_die <= (timer - philos[i].last_meal))
-			is_someone_dead = 1;
-		pthread_mutex_unlock(philos[i].last_meal_mutex);
-		pthread_mutex_lock(&table->are_done_mutex);
-		if (table->are_done)
-			is_someone_done = 1;
-		if (table->are_done == table->number_of_philosophers)
-		{
-			pthread_mutex_unlock(&table->are_done_mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&table->are_done_mutex);
+		is_someone_dead = check_if_someone_died(&philos[i], table);
+		is_someone_done = check_if_philos_are_done(table);
+		if (is_someone_dead == -1 || is_someone_done == 2)
+			return ;
 		if (is_someone_dead && !is_someone_done)
 		{
-			pthread_mutex_lock(&table->is_someone_dead_mutex);
-			table->is_someone_dead = 1;
-			pthread_mutex_unlock(&table->is_someone_dead_mutex);
-			printf("%ld %zu died\n", get_time() - start_time, philos[i].id);
-			break ;
+			finish_loop(&philos[i], table);
+			return ;
 		}
 		i++;
-		if (i == table->number_of_philosophers)
+		if (i == table->num_of_philos)
 			i = 0;
 	}
 }

@@ -26,22 +26,15 @@ int	ft_start_mutex(t_mutex mutex, t_mutex *array, int key)
 
 static int	initialize_mutexes(t_table *table)
 {
-	//size_t	nof;
-
-	//nof = table->number_of_philosophers;
 	if (pthread_mutex_init(&table->are_done_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
-		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
-		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
 	if (pthread_mutex_init(&table->is_someone_dead_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
 		pthread_mutex_destroy(&table->are_done_mutex);
-		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
-		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
 	if (pthread_mutex_init(&table->start_time_mutex, NULL))
@@ -49,26 +42,24 @@ static int	initialize_mutexes(t_table *table)
 		ft_print_error("Could not initialize mutex\n");
 		pthread_mutex_destroy(&table->are_done_mutex);
 		pthread_mutex_destroy(&table->is_someone_dead_mutex);
-		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
-		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
 	return (1);
 }
 
-pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
+pthread_t	*init_threads(t_table *table, t_philo *philos, t_mutex *forks)
 {
-	int		i;
+	int			i;
 	pthread_t	*threads;
 
-	threads = ft_calloc(table->number_of_philosophers, sizeof(pthread_t));
+	threads = ft_calloc(table->num_of_philos, sizeof(pthread_t));
 	if (!threads)
 	{
 		ft_print_error("Could not allocate memory\n");
 		return (NULL);
 	}
 	i = 0;
-	while ((size_t)i < table->number_of_philosophers)
+	while ((size_t)i < table->num_of_philos)
 	{
 		philos[i] = fill_params(table, forks, i);
 		if (pthread_create(&threads[i], NULL, &routine, &philos[i]))
@@ -85,34 +76,20 @@ pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
 	return (threads);
 }
 
-int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
+int	initialize_mutex_and_threads(t_table *table, t_philo *philos)
 {
 	table->forks = ft_start_mutex_array(table);
-	//table->is_fork_locked = ft_calloc(table->number_of_philosophers, sizeof(size_t));
-	//table->is_done = ft_calloc(table->number_of_philosophers, sizeof(t_mutex));
-	if (!table->forks /*|| !table->is_fork_locked !table->is_done*/)
+	if (!table->forks)
 		return (free_stuff(table, philos, NULL));
 	table->last_meal_mutex = ft_start_mutex_array(table);
 	if (!table->last_meal_mutex)
 	{
-		destroy_mutex_array(table->forks, table->number_of_philosophers);
+		destroy_mutex_array(table->forks, table->num_of_philos);
 		return (free_stuff(table, philos, NULL));
 	}
-	/*table->is_fork_locked_mutex = ft_start_mutex_array(table);
-	if (!table->is_fork_locked_mutex)
-	{
-		destroy_forks_and_last_meal_mutexes(table);
-		return (free_stuff(table, philos, NULL));
-	}
-	table->is_done_mutex = ft_start_mutex_array(table);
-	if (!table->is_done_mutex)
-	{
-		destroy_forks_and_last_meal_mutexes(table);
-		return (free_stuff(table, philos, NULL));
-	}*/
 	if (!initialize_mutexes(table))
 		return (free_stuff(table, philos, NULL));
-	table->threads = initialize_threads(table, philos, table->forks);
+	table->threads = init_threads(table, philos, table->forks);
 	if (!table->threads)
 	{
 		destroy_every_mutex(table);
@@ -121,19 +98,19 @@ int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
 	return (1);
 }
 
-t_philos	*initialize_philos(t_table *table)
+t_philo	*initialize_philos(t_table *table)
 {
-	t_philos	*philos;
-	size_t		i;
+	t_philo	*philos;
+	size_t	i;
 
-	philos = ft_calloc(table->number_of_philosophers, sizeof(t_philos));
+	philos = ft_calloc(table->num_of_philos, sizeof(t_philo));
 	if (!philos)
 	{
 		ft_print_error("Could not allocate memory\n");
 		return (NULL);
 	}
-	i  = 0;
-	while (i < table->number_of_philosophers)
+	i = 0;
+	while (i < table->num_of_philos)
 	{
 		philos[i].table = table;
 		i++;

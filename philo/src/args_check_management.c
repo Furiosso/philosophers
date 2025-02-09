@@ -36,21 +36,19 @@ static t_table	*fill_table(char **argv)
 		ft_print_error("Could not allocate memory\n");
 		return (NULL);
 	}
-	table->number_of_philosophers = ft_atol(argv[1]);
+	table->num_of_philos = ft_atol(argv[1]);
 	table->time_to_die = ft_atol(argv[2]);
 	table->time_to_eat = ft_atol(argv[3]);
 	table->time_to_sleep = ft_atol(argv[4]);
-	if (!table->number_of_philosophers || !table->time_to_die
+	if (!table->num_of_philos || !table->time_to_die
 		|| !table->time_to_eat || !table->time_to_sleep)
 		return (ft_print_error_and_free("Invalid value found\n", table));
 	if (argv[5])
 	{
-		table->number_of_times_each_philosopher_must_eat = ft_atol(argv[5]);
-		if (!table->number_of_times_each_philosopher_must_eat)
+		table->num_of_cycles = ft_atol(argv[5]);
+		if (!table->num_of_cycles)
 			return (ft_print_error_and_free("Invalid value found\n", table));
 	}
-	table->everyone_is_ready = 0;
-	table->is_someone_dead = 0;
 	table->time_to_think = table->time_to_eat - table->time_to_sleep;
 	return (table);
 }
