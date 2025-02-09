@@ -44,7 +44,7 @@ static int	initialize_mutexes(t_table *table)
 		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
-	if (pthread_mutex_init(&table->everyone_is_ready_mutex, NULL))
+	if (pthread_mutex_init(&table->start_time_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
 		pthread_mutex_destroy(&table->are_done_mutex);

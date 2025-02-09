@@ -11,23 +11,6 @@
 /* ************************************************************************** */
 
 #include "../include/philo.h"
-/*
-void		lock_forks(t_mutex *left_fork, t_mutex *right_fork, int id)
-{
-	long	fork_time;
-
-	pthread_mutex_lock(left_fork);
-	fork_time = get_time();
-	//gettimeofday(&fork_time, NULL);
-	printf("%ld %d has taken a fork\n", fork_time, id);
-	//printf("Fork: %p\n", (void *)left_fork);
-	pthread_mutex_lock(right_fork);
-	//gettimeofday(&fork_time, NULL);
-	fork_time = get_time();
-	printf("%ld %d has taken a fork\n", fork_time, id);
-	//printf("Fork: %p\n", (void *)right_fork);
-}
-*/
 
 int	check_if_someone_is_dead(t_table *table)
 {
@@ -116,7 +99,7 @@ int	destroy_every_mutex(t_table *table)
 	//destroy_mutex_array(table->is_done_mutex, table->number_of_philosophers);
 	pthread_mutex_destroy(&table->are_done_mutex);
 	pthread_mutex_destroy(&table->is_someone_dead_mutex);
-	pthread_mutex_destroy(&table->everyone_is_ready_mutex);
+	pthread_mutex_destroy(&table->start_time_mutex);
 	return (0);
 }
 

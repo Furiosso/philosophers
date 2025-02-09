@@ -23,10 +23,11 @@ void	*routine(void *arg)
 
 	philosopher = (t_philos *)arg;
 	cycles = philosopher->number_of_times_each_philosopher_must_eat;
-	pthread_mutex_lock(&philosopher->table->everyone_is_ready_mutex);
+	pthread_mutex_lock(&philosopher->table->start_time_mutex);
 	philosopher->table->everyone_is_ready++;
-	pthread_mutex_unlock(&philosopher->table->everyone_is_ready_mutex);
+	pthread_mutex_unlock(&philosopher->table->start_time_mutex);
 	philosopher->start_time = wait_for_everyone_to_be_ready(philosopher->table);
+	//printf("philosopher %zu start time: %ld\n", philosopher->id, philosopher->start_time);
 	check_if_someone_is_dead(philosopher->table);
 	pthread_mutex_lock(philosopher->last_meal_mutex);
 	philosopher->last_meal = philosopher->start_time;

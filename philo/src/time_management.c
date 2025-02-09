@@ -25,11 +25,8 @@ int	timekeeper(long time, int has_to_check_death, t_table *table)
 		return (0);
 	while (timer - start_time < time)
 	{
-		if (has_to_check_death)
-		{
-			if (check_if_someone_is_dead(table))
+		if (has_to_check_death && check_if_someone_is_dead(table))
 				return (0);
-		}
 		timer = get_time();
 		if (timer < 0)
 			return (0);
@@ -49,57 +46,34 @@ long	get_time(void)
 	}
 	return (timer.tv_sec * 1000 + timer.tv_usec / 1000);
 }
-/*
-long	calculate_time_since_last_meal(philosopher)
-{
-	
-}
 
-void	*check_death(void *arg)
+long wait_for_everyone_to_be_ready(t_table *table)
 {
-	long			timer;
-	t_philos	philosopher;
+	size_t	number_of_philosophers;
 
-	philosopher = *(t_philos *)arg;
+	number_of_philosophers = table->number_of_philosophers;
 	while (1)
 	{
-		
-		//printf("%d: last meal in death check: %ld\n", philosopher.id, get_time() - philosopher.last_meal);
-		timer = get_time() - philosopher.last_meal;
-		if (timer >= philosopher.time_to_die)
+		pthread_mutex_lock(&table->start_time_mutex);
+		if (table->everyone_is_ready == number_of_philosophers)
 		{
-			printf("%ld %d died\n", timer, philosopher.id);
-			if (philosopher.is_locked)
-				pthread_mutex_unlock(philosopher.left_fork);
-			pthread_detach(*philosopher.thread);
+			pthread_mutex_unlock(&table->start_time_mutex);
 			break ;
 		}
+		pthread_mutex_unlock(&table->start_time_mutex);
 	}
-	return (NULL);
-}*/
-
-size_t wait_for_everyone_to_be_ready(t_table *table)
-{
-	t_mutex *mutex;
-	size_t number_of_philosophers;
-	size_t start_time;
-	int everyone_is_ready;
-
-	mutex = &table->everyone_is_ready_mutex;
-	number_of_philosophers = table->number_of_philosophers;
-	everyone_is_ready = 0;
-	while (1) {
-		pthread_mutex_lock(mutex);
-		if (table->everyone_is_ready == number_of_philosophers)
-			everyone_is_ready = 1;
-		pthread_mutex_unlock(mutex);
-		if (everyone_is_ready)
-			break;
+	pthread_mutex_lock(&table->start_time_mutex);
+	if (!table->start_time)
+	{
+	table->start_time = get_time();
+		if (!table->start_time)
+		{
+			pthread_mutex_unlock(&table->start_time_mutex);
+			return (0);
+		}
 	}
-	start_time = get_time();
-	if (!start_time)
-		return (0);
-	return (start_time);
+	pthread_mutex_unlock(&table->start_time_mutex);
+	return (table->start_time);
 }
 
 size_t	check_last_meal(size_t time_to_die, size_t timer, t_philos *philosopher)

@@ -50,7 +50,7 @@ void	cut_the_threads(t_table *table)
 	pthread_mutex_lock(&table->is_someone_dead_mutex);
 	table->is_someone_dead = 1;
 	pthread_mutex_unlock(&table->is_someone_dead_mutex);
-	pthread_mutex_lock(&table->everyone_is_ready_mutex);
+	pthread_mutex_lock(&table->start_time_mutex);
 	table->everyone_is_ready = table->number_of_philosophers;
-	pthread_mutex_unlock(&table->everyone_is_ready_mutex);
+	pthread_mutex_unlock(&table->start_time_mutex);
 }
