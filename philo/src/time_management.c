@@ -12,12 +12,41 @@
 
 #include "../include/philo.h"
 
+int	timekeeper(long time, int has_to_check_death, t_table *table)
+{
+	long	start_time;
+	long	timer;
+
+	start_time = get_time();
+	if (start_time < 0)
+		return (0);
+	timer = get_time();
+	if (timer < 0)
+		return (0);
+	while (timer - start_time < time)
+	{
+		if (has_to_check_death)
+		{
+			if (check_if_someone_is_dead(table))
+				return (0);
+		}
+		timer = get_time();
+		if (timer < 0)
+			return (0);
+	}
+	return (1);
+}
+
+
 long	get_time(void)
 {
 	struct timeval	timer;
 
 	if (gettimeofday(&timer, NULL) < 0)
-		return (-1);
+	{
+		ft_print_error("Could not get time\n");
+		return (0);
+	}
 	return (timer.tv_sec * 1000 + timer.tv_usec / 1000);
 }
 /*

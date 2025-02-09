@@ -94,6 +94,7 @@ pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks);
 //void		lock_forks(pthread_mutex_t *left_fork, pthread_mutex_t *right_fork, int id);
 //char		lock_forks(t_philos *philosopher);
 void		*routine(void *arg);
+int			timekeeper(long time, int has_to_check_death, t_table *table);
 void		unlock_forks(t_philos *philosopher);
 size_t		wait_for_everyone_to_be_ready(t_table *table);
 

@@ -23,7 +23,8 @@ static void	*one_philo_run(void *arg)
 	time_to_die = *(size_t *)arg;
 	printf("0 1 is thinking\n");
 	printf("0 1 has taken a fork\n");
-	usleep(time_to_die * 1000);
+	if (!timekeeper(time_to_die, 0, NULL))
+		return (NULL);
 	printf("%zu 1 died\n", time_to_die);
 	return (NULL);
 }
@@ -154,7 +155,8 @@ static void	check_death(t_table *table, t_philos *philos/*, pthread_t *threads, 
 	is_someone_dead = 0;
 	is_someone_done = 0;
 	start_time = wait_for_everyone_to_be_ready(table);
-	usleep(table->time_to_die * 1000);
+	if (!timekeeper(table->time_to_die, 0, NULL))
+		return ;
 	while (1)
 	{
 		pthread_mutex_lock(&table->are_done_mutex);
