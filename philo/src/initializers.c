@@ -26,15 +26,22 @@ int	ft_start_mutex(t_mutex mutex, t_mutex *array, int key)
 
 static int	initialize_mutexes(t_table *table)
 {
+	//size_t	nof;
+
+	//nof = table->number_of_philosophers;
 	if (pthread_mutex_init(&table->are_done_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
+		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
+		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
 	if (pthread_mutex_init(&table->is_someone_dead_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
 		pthread_mutex_destroy(&table->are_done_mutex);
+		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
+		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
 	if (pthread_mutex_init(&table->everyone_is_ready_mutex, NULL))
@@ -42,6 +49,8 @@ static int	initialize_mutexes(t_table *table)
 		ft_print_error("Could not initialize mutex\n");
 		pthread_mutex_destroy(&table->are_done_mutex);
 		pthread_mutex_destroy(&table->is_someone_dead_mutex);
+		//destroy_mutex_array(table->is_fork_locked_mutex, nof);
+		//destroy_mutex_array(table->is_done_mutex, nof);
 		return (destroy_forks_and_last_meal_mutexes(table));
 	}
 	return (1);
@@ -79,8 +88,9 @@ pthread_t	*initialize_threads(t_table *table, t_philos *philos, t_mutex *forks)
 int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
 {
 	table->forks = ft_start_mutex_array(table);
-	table->is_fork_locked = ft_calloc(table->number_of_philosophers, sizeof(size_t));
-	if (!table->forks || !table->is_fork_locked)
+	//table->is_fork_locked = ft_calloc(table->number_of_philosophers, sizeof(size_t));
+	//table->is_done = ft_calloc(table->number_of_philosophers, sizeof(t_mutex));
+	if (!table->forks /*|| !table->is_fork_locked !table->is_done*/)
 		return (free_stuff(table, philos, NULL));
 	table->last_meal_mutex = ft_start_mutex_array(table);
 	if (!table->last_meal_mutex)
@@ -88,32 +98,28 @@ int	initialize_mutex_and_threads(t_table *table, t_philos *philos)
 		destroy_mutex_array(table->forks, table->number_of_philosophers);
 		return (free_stuff(table, philos, NULL));
 	}
+	/*table->is_fork_locked_mutex = ft_start_mutex_array(table);
+	if (!table->is_fork_locked_mutex)
+	{
+		destroy_forks_and_last_meal_mutexes(table);
+		return (free_stuff(table, philos, NULL));
+	}
+	table->is_done_mutex = ft_start_mutex_array(table);
+	if (!table->is_done_mutex)
+	{
+		destroy_forks_and_last_meal_mutexes(table);
+		return (free_stuff(table, philos, NULL));
+	}*/
 	if (!initialize_mutexes(table))
 		return (free_stuff(table, philos, NULL));
 	table->threads = initialize_threads(table, philos, table->forks);
 	if (!table->threads)
 	{
-		destroy_forks_and_last_meal_mutexes(table);
-		pthread_mutex_destroy(&table->are_done_mutex);
-		pthread_mutex_destroy(&table->is_someone_dead_mutex);
-		pthread_mutex_destroy(&table->everyone_is_ready_mutex);
+		destroy_every_mutex(table);
 		return (free_stuff(table, philos, NULL));
 	}
 	return (1);
 }
-/*
-t_philos	free_last_meal_mutexes(t_philos *philos, size_t number_of_philosophers)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < number_of_philosophers)
-	{
-		free(philos[i].last_meal_mutex);
-		i++;
-	}
-	return (NULL);
-}*/
 
 t_philos	*initialize_philos(t_table *table)
 {

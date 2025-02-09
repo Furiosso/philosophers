@@ -62,15 +62,31 @@ int	check_mutex(t_mutex *mutex, size_t variable, size_t number_of_philosophers)
 
 void	unlock_forks(t_philos *philosopher)
 {
-	if (philosopher->is_left_locked)
-	{
-		pthread_mutex_unlock(philosopher->left_fork);
-		philosopher->is_left_locked = 0;
-	}
+	//int is_locked[2];
+
+	//is_locked[1] = 0;
+	//pthread_mutex_lock(philosopher->right_fork_mutex);
 	if (philosopher->is_right_locked)
+	//	is_locked[1] = 1;
+	//pthread_mutex_unlock(philosopher->right_fork_mutex);
+	//if (is_locked[1])
 	{
 		pthread_mutex_unlock(philosopher->right_fork);
+		//pthread_mutex_lock(philosopher->right_fork_mutex);
 		philosopher->is_right_locked = 0;
+		//pthread_mutex_unlock(philosopher->right_fork_mutex);
+	}
+	//is_locked[0] = 0;
+	//pthread_mutex_lock(philosopher->left_fork_mutex);
+	if (philosopher->is_left_locked)
+	//	is_locked[0] = 1;
+	//pthread_mutex_unlock(philosopher->left_fork_mutex);
+	//if (is_locked[0])
+	{
+		pthread_mutex_unlock(philosopher->left_fork);
+		//pthread_mutex_lock(philosopher->left_fork_mutex);
+		philosopher->is_left_locked = 0;
+		//pthread_mutex_unlock(philosopher->left_fork_mutex);
 	}
 }
 
@@ -90,6 +106,17 @@ int	destroy_forks_and_last_meal_mutexes(t_table *table)
 {
 	destroy_mutex_array(table->forks, table->number_of_philosophers);
 	destroy_mutex_array(table->last_meal_mutex, table->number_of_philosophers);
+	return (0);
+}
+
+int	destroy_every_mutex(t_table *table)
+{
+	destroy_forks_and_last_meal_mutexes(table);
+	//destroy_mutex_array(table->is_fork_locked_mutex, table->number_of_philosophers);
+	//destroy_mutex_array(table->is_done_mutex, table->number_of_philosophers);
+	pthread_mutex_destroy(&table->are_done_mutex);
+	pthread_mutex_destroy(&table->is_someone_dead_mutex);
+	pthread_mutex_destroy(&table->everyone_is_ready_mutex);
 	return (0);
 }
 

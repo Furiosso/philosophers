@@ -18,23 +18,30 @@ t_philos	fill_params(t_table *table, t_mutex *forks, int i)
 
 	philosopher.id = i + 1;
 	philosopher.left_fork = &forks[i];
+	//philosopher.left_fork_mutex = &table->is_fork_locked_mutex[i];
+	//philosopher.is_left_locked = &table->is_fork_locked[i];
+	philosopher.right_fork = &forks[i + 1];
+	//philosopher.right_fork_mutex = &table->is_fork_locked_mutex[i + 1];
+	//philosopher.is_right_locked = &table->is_fork_locked[i + 1];
 	if (philosopher.id == table->number_of_philosophers)
+	{
 		philosopher.right_fork = &forks[0];
-	else
-		philosopher.right_fork = &forks[i + 1];
+		//philosopher.right_fork_mutex = &table->is_fork_locked_mutex[0];
+		//philosopher.is_right_locked = &table->is_fork_locked[0];
+	}
+	//philosopher.is_done_mutex = &table->are_done_mutex;
 	philosopher.last_meal_mutex = &table->last_meal_mutex[i];
 	philosopher.number_of_philosophers = table->number_of_philosophers;
 	philosopher.time_to_eat = table->time_to_eat;
 	philosopher.time_to_sleep = table->time_to_sleep;
 	philosopher.time_to_think = table->time_to_think;
+	if (philosopher.time_to_think == 0)
+		philosopher.time_to_think = philosopher.time_to_eat;
 	philosopher.table = table;
 	philosopher.time_to_start = philosopher.table->time_to_die;
 	if (philosopher.time_to_eat < philosopher.table->time_to_die)
 		philosopher.time_to_start = philosopher.time_to_eat;
 	philosopher.number_of_times_each_philosopher_must_eat = table->number_of_times_each_philosopher_must_eat;
-	philosopher.is_left_locked = 0;
-	philosopher.is_right_locked = 0;
-	philosopher.has_had_first_meal = 0;
 	return (philosopher);
 }
 
