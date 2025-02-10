@@ -12,7 +12,7 @@
 
 #include "../include/philo.h"
 
-int	timekeeper(long time, int has_to_check_death, t_table *table)
+int	timekeeper(long time, t_table *table)
 {
 	long	start_time;
 	long	timer;
@@ -25,9 +25,9 @@ int	timekeeper(long time, int has_to_check_death, t_table *table)
 		return (0);
 	while (timer - start_time < time)
 	{
-		if (has_to_check_death && check_if_someone_is_dead(table))
+		if (check_if_someone_is_dead(table))
 			return (0);
-		usleep(50);
+		usleep(20);
 		timer = get_time();
 		if (timer < 0)
 			return (0);

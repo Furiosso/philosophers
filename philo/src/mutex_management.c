@@ -57,12 +57,18 @@ int	destroy_forks_and_last_meal_mutexes(t_table *table)
 	return (0);
 }
 
-int	destroy_every_mutex(t_table *table)
+int	destroy_every_mutex(t_table *table, int key)
 {
-	destroy_forks_and_last_meal_mutexes(table);
-	pthread_mutex_destroy(&table->are_done_mutex);
-	pthread_mutex_destroy(&table->is_someone_dead_mutex);
-	pthread_mutex_destroy(&table->start_time_mutex);
+	if (key > 0)
+		destroy_forks_and_last_meal_mutexes(table);
+	if (key > 1)
+		pthread_mutex_destroy(&table->are_done_mutex);
+	if (key > 2)
+		pthread_mutex_destroy(&table->is_someone_dead_mutex);
+	if (key > 3)
+		pthread_mutex_destroy(&table->start_time_mutex);
+	if (key > 4)
+		pthread_mutex_destroy(&table->print_mutex);
 	return (0);
 }
 

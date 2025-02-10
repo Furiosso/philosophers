@@ -12,6 +12,36 @@
 
 #include "../include/philo.h"
 
+int	safe_print(int behaviour, t_table *table, size_t id)
+{
+	long	timer;
+
+	pthread_mutex_lock(&table->print_mutex);
+	timer = get_time();
+	if (!timer)
+		return (0);
+	if (behaviour == 0)
+	{
+		usleep(1000);
+		printf("%s%ld %zu died%s\n",
+			RED, timer - table->start_time, id, RESET);
+	}
+	if (behaviour == 1)
+		printf("%s%ld %zu is thinking%s\n",
+			CYAN, timer - table->start_time, id, RESET);
+	if (behaviour == 2)
+		printf("%s%ld %zu has taken a fork%s\n",
+			MAGENTA, timer - table->start_time, id, RESET);
+	if (behaviour == 3)
+		printf("%s%ld %zu is eating%s\n",
+			GREEN, timer - table->start_time, id, RESET);
+	if (behaviour == 4)
+		printf("%s%ld %zu is sleeping%s\n",
+			YELLOW, timer - table->start_time, id, RESET);
+	pthread_mutex_unlock(&table->print_mutex);
+	return (1);
+}
+
 static int	check_cycles(t_philo *philosopher)
 {
 	if (philosopher->num_of_cycles)
@@ -31,9 +61,7 @@ static int	check_cycles(t_philo *philosopher)
 static int	cycle(t_philo *philosopher)
 {
 	long	timer;
-	size_t	start_time;
 
-	start_time = philosopher->start_time;
 	if (!take_forks_and_eat(philosopher))
 		return (0);
 	if (check_if_someone_is_dead(philosopher->table))
@@ -43,10 +71,11 @@ static int	cycle(t_philo *philosopher)
 	timer = get_time();
 	if (!timer)
 		return (0);
-	printf("%ld %zu is thinking\n", timer - start_time, philosopher->id);
+	if (!safe_print(1, philosopher->table, philosopher->id))
+		return (0);
 	if (philosopher->num_of_philos % 2)
 	{
-		if (!timekeeper (philosopher->time_to_think, 1, philosopher->table))
+		if (!timekeeper (philosopher->time_to_think, philosopher->table))
 			return (0);
 	}
 	if (check_cycles(philosopher))
@@ -62,17 +91,20 @@ void	*routine(void *arg)
 	pthread_mutex_lock(&philosopher->table->start_time_mutex);
 	philosopher->table->everyone_is_ready++;
 	pthread_mutex_unlock(&philosopher->table->start_time_mutex);
-	philosopher->start_time = wait_for_everyone_to_be_ready(philosopher->table);
-	if (!philosopher->start_time)
-		return (NULL);
-	check_if_someone_is_dead(philosopher->table);
 	pthread_mutex_lock(philosopher->last_meal_mutex);
-	philosopher->last_meal = philosopher->start_time;
+	philosopher->last_meal = wait_for_everyone_to_be_ready(philosopher->table);
+	if (!philosopher->last_meal)
+	{
+		pthread_mutex_unlock(philosopher->last_meal_mutex);
+		return (NULL);
+	}
 	pthread_mutex_unlock(philosopher->last_meal_mutex);
-	printf("0 %zu is thinking\n", philosopher->id);
+	check_if_someone_is_dead(philosopher->table);
+	if (!safe_print(1, philosopher->table, philosopher->id))
+		return (NULL);
 	if (philosopher->id % 2 == 1)
 	{
-		if (!timekeeper(philosopher->time_to_start, 1, philosopher->table))
+		if (!timekeeper(philosopher->time_to_start, philosopher->table))
 			return (NULL);
 	}
 	while (!check_if_someone_is_dead(philosopher->table))

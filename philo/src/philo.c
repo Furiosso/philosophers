@@ -19,11 +19,10 @@ static void	*one_philo_run(void *arg)
 	size_t	time_to_die;
 
 	time_to_die = *(size_t *)arg;
-	printf("0 1 is thinking\n");
-	printf("0 1 has taken a fork\n");
-	if (!timekeeper(time_to_die, 0, NULL))
-		return (NULL);
-	printf("%zu 1 died\n", time_to_die);
+	printf("%s0 1 is thinking%s\n", CYAN, RESET);
+	printf("%s0 1 has taken a fork%s\n", MAGENTA, RESET);
+	usleep(time_to_die * 1000);
+	printf("%s%zu 1 died%s\n", RED, time_to_die, RESET);
 	return (NULL);
 }
 
@@ -88,5 +87,5 @@ static void	join_threads(pthread_t *threads, t_table *table)
 	while (i < table->num_of_philos)
 		pthread_join(threads[i++], NULL);
 	i = 0;
-	destroy_every_mutex(table);
+	destroy_every_mutex(table, 5);
 }

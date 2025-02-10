@@ -35,17 +35,10 @@ static int	check_if_philos_are_done(t_table *table)
 
 static void	finish_loop(t_philo *philo, t_table *table)
 {
-	long	start_time;
-	long	timer;
-
-	start_time = philo->start_time;
 	pthread_mutex_lock(&table->is_someone_dead_mutex);
 	table->is_someone_dead = 1;
 	pthread_mutex_unlock(&table->is_someone_dead_mutex);
-	timer = get_time();
-	if (!timer)
-		return ;
-	printf("%ld %zu died\n", timer - start_time, philo->id);
+	safe_print(0, table, philo->id);
 }
 
 void	check_death(t_table *table, t_philo *philos)
@@ -58,8 +51,7 @@ void	check_death(t_table *table, t_philo *philos)
 	is_someone_dead = 0;
 	is_someone_done = 0;
 	wait_for_everyone_to_be_ready(table);
-	if (!timekeeper(table->time_to_die, 0, NULL))
-		return ;
+	usleep(table->time_to_die * 1000);
 	while (1)
 	{
 		is_someone_dead = check_if_someone_died(&philos[i], table);

@@ -29,20 +29,22 @@ static int	initialize_mutexes(t_table *table)
 	if (pthread_mutex_init(&table->are_done_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
-		return (destroy_forks_and_last_meal_mutexes(table));
+		return (destroy_every_mutex(table, 1));
 	}
 	if (pthread_mutex_init(&table->is_someone_dead_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
-		pthread_mutex_destroy(&table->are_done_mutex);
-		return (destroy_forks_and_last_meal_mutexes(table));
+		return (destroy_every_mutex(table, 2));
 	}
 	if (pthread_mutex_init(&table->start_time_mutex, NULL))
 	{
 		ft_print_error("Could not initialize mutex\n");
-		pthread_mutex_destroy(&table->are_done_mutex);
-		pthread_mutex_destroy(&table->is_someone_dead_mutex);
-		return (destroy_forks_and_last_meal_mutexes(table));
+		return (destroy_every_mutex(table, 3));
+	}
+	if (pthread_mutex_init(&table->print_mutex, NULL))
+	{
+		ft_print_error("Could not initialize mutex\n");
+		return (destroy_every_mutex(table, 4));
 	}
 	return (1);
 }
@@ -92,7 +94,7 @@ int	initialize_mutex_and_threads(t_table *table, t_philo *philos)
 	table->threads = init_threads(table, philos, table->forks);
 	if (!table->threads)
 	{
-		destroy_every_mutex(table);
+		destroy_every_mutex(table, 5);
 		return (free_stuff(table, philos, NULL));
 	}
 	return (1);
