@@ -77,7 +77,7 @@ int	take_forks_and_eat(t_philo *philosopher)
 
 	left_fork = philosopher->left_fork;
 	right_fork = philosopher->right_fork;
-	if (!(philosopher->id % 2))
+	if (philosopher->id % 2)
 	{
 		if (!take_forks(left_fork, right_fork, philosopher))
 			return (0);
@@ -87,11 +87,11 @@ int	take_forks_and_eat(t_philo *philosopher)
 		if (!take_forks(right_fork, left_fork, philosopher))
 			return (0);
 	}
-	//if (check_if_someone_is_dead(philosopher->table))
-	//{
-	//	unlock_forks(philosopher);
-	//	return (0);
-	//}
+	if (check_if_someone_is_dead(philosopher->table))
+	{
+		unlock_forks(philosopher);
+		return (0);
+	}
 	if (!eating(philosopher))
 		return (0);
 	return (1);

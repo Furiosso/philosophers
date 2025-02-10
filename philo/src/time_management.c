@@ -27,6 +27,7 @@ int	timekeeper(long time, int has_to_check_death, t_table *table)
 	{
 		if (has_to_check_death && check_if_someone_is_dead(table))
 			return (0);
+		usleep(50);
 		timer = get_time();
 		if (timer < 0)
 			return (0);
@@ -73,16 +74,4 @@ long	wait_for_everyone_to_be_ready(t_table *table)
 	}
 	pthread_mutex_unlock(&table->start_time_mutex);
 	return (table->start_time);
-}
-
-size_t	check_last_meal(size_t time_to_die, size_t timer, t_philo *philosopher)
-{
-	int		result;
-
-	result = 0;
-	pthread_mutex_lock(philosopher->last_meal_mutex);
-	if (time_to_die <= (timer - philosopher->last_meal))
-		result = 1;
-	pthread_mutex_unlock(philosopher->last_meal_mutex);
-	return (result);
 }

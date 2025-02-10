@@ -63,7 +63,6 @@ t_table		*check_args(int argc, char **argv);
 void		check_death(t_table *table, t_philo *philos);
 int			check_if_someone_is_dead(t_table *table);
 size_t		check_last_meal(size_t time_to_die, size_t timer, t_philo *philo);
-int			check_mutex(t_mutex *mutex, size_t variable, size_t num_of_philos);
 void		cut_the_threads(t_table *table);
 int			destroy_every_mutex(t_table *table);
 int			destroy_forks_and_last_meal_mutexes(t_table *table);

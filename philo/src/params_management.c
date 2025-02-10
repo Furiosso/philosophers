@@ -17,25 +17,24 @@ t_philo	fill_params(t_table *table, t_mutex *forks, int i)
 	t_philo	philosopher;
 
 	philosopher.id = i + 1;
-	philosopher.left_fork = &forks[i];
-	philosopher.right_fork = &forks[i + 1];
+	philosopher.right_fork = &forks[i];
+	philosopher.left_fork = &forks[i + 1];
 	if (philosopher.id == table->num_of_philos)
-	{
-		philosopher.right_fork = &forks[0];
-	}
+		philosopher.left_fork = &forks[0];
 	philosopher.last_meal_mutex = &table->last_meal_mutex[i];
 	philosopher.num_of_philos = table->num_of_philos;
 	philosopher.time_to_eat = table->time_to_eat;
 	philosopher.time_to_sleep = table->time_to_sleep;
-	philosopher.time_to_think = table->time_to_think;//revisar time to think
+	philosopher.time_to_think = table->time_to_think;
 	if (table->time_to_think < 0)
-		//philosopher.time_to_think = philosopher.time_to_eat;
 		philosopher.time_to_think = 0;
 	philosopher.table = table;
-	philosopher.time_to_start = philosopher.table->time_to_die;//y time to start
+	philosopher.time_to_start = table->time_to_die / 2;
 	if (philosopher.time_to_eat < philosopher.table->time_to_die)
-		philosopher.time_to_start = philosopher.time_to_eat;
+		philosopher.time_to_start = philosopher.time_to_eat / 2;
 	philosopher.num_of_cycles = table->num_of_cycles;
+	philosopher.start_time = get_time();
+	philosopher.last_meal = philosopher.start_time;
 	return (philosopher);
 }
 

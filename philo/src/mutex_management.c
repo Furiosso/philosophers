@@ -26,7 +26,7 @@ int	check_if_someone_is_dead(t_table *table)
 
 void	unlock_forks(t_philo *philosopher)
 {
-	if (!(philosopher->id % 2))
+	if (philosopher->id % 2)
 	{
 		pthread_mutex_unlock(philosopher->right_fork);
 		pthread_mutex_unlock(philosopher->left_fork);

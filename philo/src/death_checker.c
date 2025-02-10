@@ -38,7 +38,7 @@ static void	finish_loop(t_philo *philo, t_table *table)
 	long	start_time;
 	long	timer;
 
-	start_time = table->start_time;
+	start_time = philo->start_time;
 	pthread_mutex_lock(&table->is_someone_dead_mutex);
 	table->is_someone_dead = 1;
 	pthread_mutex_unlock(&table->is_someone_dead_mutex);

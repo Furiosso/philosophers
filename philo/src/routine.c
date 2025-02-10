@@ -44,9 +44,9 @@ static int	cycle(t_philo *philosopher)
 	if (!timer)
 		return (0);
 	printf("%ld %zu is thinking\n", timer - start_time, philosopher->id);
-	if ((philosopher->num_of_philos % 2) == 1 && (philosopher->id % 2 == 1))
+	if (philosopher->num_of_philos % 2)
 	{
-		if (!timekeeper (philosopher->time_to_think * 0.45, 1, philosopher->table))
+		if (!timekeeper (philosopher->time_to_think, 1, philosopher->table))
 			return (0);
 	}
 	if (check_cycles(philosopher))
@@ -65,7 +65,7 @@ void	*routine(void *arg)
 	philosopher->start_time = wait_for_everyone_to_be_ready(philosopher->table);
 	if (!philosopher->start_time)
 		return (NULL);
-	//check_if_someone_is_dead(philosopher->table);
+	check_if_someone_is_dead(philosopher->table);
 	pthread_mutex_lock(philosopher->last_meal_mutex);
 	philosopher->last_meal = philosopher->start_time;
 	pthread_mutex_unlock(philosopher->last_meal_mutex);
