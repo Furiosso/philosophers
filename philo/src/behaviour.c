@@ -87,11 +87,11 @@ int	take_forks_and_eat(t_philo *philosopher)
 		if (!take_forks(right_fork, left_fork, philosopher))
 			return (0);
 	}
-	if (check_if_someone_is_dead(philosopher->table))
-	{
-		unlock_forks(philosopher);
-		return (0);
-	}
+	//if (check_if_someone_is_dead(philosopher->table))
+	//{
+	//	unlock_forks(philosopher);
+	//	return (0);
+	//}
 	if (!eating(philosopher))
 		return (0);
 	return (1);

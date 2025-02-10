@@ -28,8 +28,9 @@ t_philo	fill_params(t_table *table, t_mutex *forks, int i)
 	philosopher.time_to_eat = table->time_to_eat;
 	philosopher.time_to_sleep = table->time_to_sleep;
 	philosopher.time_to_think = table->time_to_think;//revisar time to think
-	if (philosopher.time_to_think < 1)
-		philosopher.time_to_think = philosopher.time_to_eat;
+	if (table->time_to_think < 0)
+		//philosopher.time_to_think = philosopher.time_to_eat;
+		philosopher.time_to_think = 0;
 	philosopher.table = table;
 	philosopher.time_to_start = philosopher.table->time_to_die;//y time to start
 	if (philosopher.time_to_eat < philosopher.table->time_to_die)

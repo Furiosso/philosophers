@@ -49,7 +49,7 @@ static t_table	*fill_table(char **argv)
 		if (!table->num_of_cycles)
 			return (ft_print_error_and_free("Invalid value found\n", table));
 	}
-	table->time_to_think = table->time_to_eat - table->time_to_sleep;
+	table->time_to_think = table->time_to_eat  - table->time_to_sleep;
 	return (table);
 }
 
