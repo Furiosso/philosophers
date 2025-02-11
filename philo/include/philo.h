@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:50:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/02/11 19:40:31 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 21:53:08 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ void		*routine(void *arg);
 int			safe_print(int behaviour, t_table *table, size_t id);
 int			sleeping(t_philo *philosopher);
 int			take_forks_and_eat(t_philo *philosopher);
+int			timekeeper(long time, t_table *table);
 void		unlock_forks(t_philo *philosopher);
 long		wait_for_everyone_to_be_ready(t_table *table);
 

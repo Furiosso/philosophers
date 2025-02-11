@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 18:20:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/02/11 19:40:21 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 21:47:35 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,15 +15,14 @@
 int	sleeping(t_philo *philosopher)
 {
 	long	timer;
-	long	time_to_sleep;
 
-	time_to_sleep = philosopher->time_to_sleep;
 	timer = get_time();
 	if (!timer)
 		return (0);
 	if (!safe_print(4, philosopher->table, philosopher->id))
 		return (0);
-	usleep (time_to_sleep * 1000);
+	if (!timekeeper(philosopher->time_to_sleep, philosopher->table))
+		return (0);
 	if (check_if_someone_is_dead(philosopher->table))
 		return (0);
 	return (1);
@@ -59,9 +58,7 @@ static int	take_forks(t_mutex *firstfork, t_mutex *secondfork, t_philo *philo)
 static int	eating(t_philo *philosopher)
 {
 	long	timer;
-	long	time_to_eat;
 
-	time_to_eat = philosopher->time_to_eat;
 	timer = get_time();
 	if (!timer)
 		return (0);
@@ -78,7 +75,11 @@ static int	eating(t_philo *philosopher)
 		unlock_forks(philosopher);
 		return (0);
 	}
-	usleep(time_to_eat * 1000);
+	if (!timekeeper(philosopher->time_to_eat, philosopher->table))
+	{
+		unlock_forks(philosopher);
+		return (0);
+	}
 	unlock_forks(philosopher);
 	return (1);
 }

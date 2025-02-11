@@ -6,11 +6,34 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:33:16 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/02/11 19:38:22 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 21:57:52 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/philo.h"
+
+int	timekeeper(long time, t_table *table)
+{
+	long	start_time;
+	long	timer;
+
+	start_time = get_time();
+	if (start_time < 0)
+		return (0);
+	timer = get_time();
+	if (timer < 0)
+		return (0);
+	while (timer - start_time < time)
+	{
+		if (check_if_someone_is_dead(table))
+			return (0);
+		usleep(20);
+		timer = get_time();
+		if (timer < 0)
+			return (0);
+	}
+	return (1);
+}
 
 long	get_time(void)
 {

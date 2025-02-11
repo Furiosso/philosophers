@@ -12,7 +12,7 @@ CFILES = src/behaviour.c\
 		src/routine.c\
 		src/time_management.c\
 		src/utils.c
-CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_DIR) -g3 -pthread -fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_DIR) -g3 -pthread #-fsanitize=thread
 OFILES = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(CFILES))
 
 all: $(NAME)
