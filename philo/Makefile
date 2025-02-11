@@ -3,7 +3,15 @@ CC = cc
 SRC_DIR = src
 INCLUDE_DIR = include
 BUILD_DIR = build
-CFILES = $(wildcard $(SRC_DIR)/*.c)
+CFILES = src/behaviour.c\
+		src/check_and_param_management.c\
+		src/death_checker.c\
+		src/initializers.c\
+		src/mutex_management.c\
+		src/philo.c\
+		src/routine.c\
+		src/time_management.c\
+		src/utils.c
 CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_DIR) -g3 -pthread -fsanitize=thread
 OFILES = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(CFILES))
 

@@ -1,16 +1,28 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   args_check_management.c                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/04 13:51:50 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/10 21:34:09 by dagimeno         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
 
 #include "../include/philo.h"
+
+t_philo	fill_params(t_table *table, t_mutex *forks, int i)
+{
+	t_philo	philosopher;
+
+	philosopher.id = i + 1;
+	philosopher.right_fork = &forks[i];
+	philosopher.left_fork = &forks[i + 1];
+	if (philosopher.id == table->num_of_philos)
+		philosopher.left_fork = &forks[0];
+	philosopher.last_meal_mutex = &table->last_meal_mutex[i];
+	philosopher.time_to_eat = table->time_to_eat;
+	philosopher.time_to_sleep = table->time_to_sleep;
+	philosopher.time_to_think = table->time_to_think;
+	if (table->time_to_think < 0)
+		philosopher.time_to_think = 0;
+	philosopher.table = table;
+	philosopher.time_to_start = table->time_to_die / 2;
+	if (philosopher.time_to_eat < philosopher.table->time_to_die)
+		philosopher.time_to_start = philosopher.time_to_eat / 2;
+	philosopher.num_of_cycles = table->num_of_cycles;
+	return (philosopher);
+}
 
 int	ft_print_error(char *str)
 {

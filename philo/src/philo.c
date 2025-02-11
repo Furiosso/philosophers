@@ -12,7 +12,30 @@
 
 #include "../include/philo.h"
 
-static void	join_threads(pthread_t *threads, t_table *table);
+int	free_stuff(t_table *t, t_philo *ph, pthread_t *th)
+{
+	if (th)
+		free(th);
+	if (t->forks)
+		free(t->forks);
+	if (t->last_meal_mutex)
+		free(t->last_meal_mutex);
+	if (ph)
+		free(ph);
+	free(t);
+	return (0);
+}
+
+static void	join_threads(pthread_t *threads, t_table *table)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < table->num_of_philos)
+		pthread_join(threads[i++], NULL);
+	i = 0;
+	destroy_every_mutex(table, 5);
+}
 
 static void	*one_philo_run(void *arg)
 {
@@ -63,29 +86,4 @@ int	main(int argc, char **argv)
 	check_death(table, philos);
 	join_threads(table->threads, table);
 	free_stuff(table, philos, table->threads);
-}
-
-int	free_stuff(t_table *t, t_philo *ph, pthread_t *th)
-{
-	if (th)
-		free(th);
-	if (t->forks)
-		free(t->forks);
-	if (t->last_meal_mutex)
-		free(t->last_meal_mutex);
-	if (ph)
-		free(ph);
-	free(t);
-	return (0);
-}
-
-static void	join_threads(pthread_t *threads, t_table *table)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < table->num_of_philos)
-		pthread_join(threads[i++], NULL);
-	i = 0;
-	destroy_every_mutex(table, 5);
 }

@@ -1,6 +1,18 @@
 
 #include "../include/philo.h"
 
+int	check_if_someone_is_dead(t_table *table)
+{
+	int	result;
+
+	result = 0;
+	pthread_mutex_lock(&table->is_someone_dead_mutex);
+	if (table->is_someone_dead)
+		result = 1;
+	pthread_mutex_unlock(&table->is_someone_dead_mutex);
+	return (result);
+}
+
 static int	check_if_someone_died(t_philo *philosopher, t_table *table)
 {
 	long	timer;

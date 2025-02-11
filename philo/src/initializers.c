@@ -12,18 +12,6 @@
 
 #include "../include/philo.h"
 
-int	ft_start_mutex(t_mutex *mutex, t_mutex *array, int key)
-{
-	if (pthread_mutex_init(mutex, NULL))
-	{
-		while (key > -1)
-			pthread_mutex_destroy(&array[key--]);
-		free(array);
-		return (ft_print_error("Could not initialize mutex\n"));
-	}
-	return (1);
-}
-
 static int	initialize_mutexes(t_table *table)
 {
 	if (pthread_mutex_init(&table->are_done_mutex, NULL))
@@ -49,7 +37,17 @@ static int	initialize_mutexes(t_table *table)
 	return (1);
 }
 
-pthread_t	*init_threads(t_table *table, t_philo *philos, t_mutex *forks)
+static void	cut_the_threads(t_table *table)
+{
+	pthread_mutex_lock(&table->is_someone_dead_mutex);
+	table->is_someone_dead = 1;
+	pthread_mutex_unlock(&table->is_someone_dead_mutex);
+	pthread_mutex_lock(&table->start_time_mutex);
+	table->everyone_is_ready = table->num_of_philos;
+	pthread_mutex_unlock(&table->start_time_mutex);
+}
+
+static pthread_t	*init_ths(t_table *table, t_philo *philos, t_mutex *forks)
 {
 	int			i;
 	pthread_t	*threads;
@@ -91,7 +89,7 @@ int	initialize_mutex_and_threads(t_table *table, t_philo *philos)
 	}
 	if (!initialize_mutexes(table))
 		return (free_stuff(table, philos, NULL));
-	table->threads = init_threads(table, philos, table->forks);
+	table->threads = init_ths(table, philos, table->forks);
 	if (!table->threads)
 	{
 		destroy_every_mutex(table, 5);
