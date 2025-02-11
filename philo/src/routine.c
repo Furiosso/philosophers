@@ -19,25 +19,30 @@ int	safe_print(int behaviour, t_table *table, size_t id)
 	pthread_mutex_lock(&table->print_mutex);
 	timer = get_time();
 	if (!timer)
+	{
+		pthread_mutex_unlock(&table->print_mutex);
 		return (0);
+	}
 	if (behaviour == 0)
 	{
 		usleep(1000);
-		printf("%s%ld %zu died%s\n",
-			RED, timer - table->start_time, id, RESET);
+		printf("%s%ld %zu died%s\n", RED, timer - table->start_time, id, RSET);
 	}
-	if (behaviour == 1)
-		printf("%s%ld %zu is thinking%s\n",
-			CYAN, timer - table->start_time, id, RESET);
-	if (behaviour == 2)
-		printf("%s%ld %zu has taken a fork%s\n",
-			MAGENTA, timer - table->start_time, id, RESET);
-	if (behaviour == 3)
-		printf("%s%ld %zu is eating%s\n",
-			GREEN, timer - table->start_time, id, RESET);
-	if (behaviour == 4)
-		printf("%s%ld %zu is sleeping%s\n",
-			YELLOW, timer - table->start_time, id, RESET);
+	if (!check_if_someone_is_dead(table))
+	{
+		if (behaviour == 1)
+			printf("%s%ld %zu is thinking%s\n",
+				CYAN, timer - table->start_time, id, RSET);
+		if (behaviour == 2)
+			printf("%s%ld %zu has taken a fork%s\n",
+				MAGENTA, timer - table->start_time, id, RSET);
+		if (behaviour == 3)
+			printf("%s%ld %zu is eating%s\n",
+				GREEN, timer - table->start_time, id, RSET);
+		if (behaviour == 4)
+			printf("%s%ld %zu is sleeping%s\n",
+				YELLOW, timer - table->start_time, id, RSET);
+	}
 	pthread_mutex_unlock(&table->print_mutex);
 	return (1);
 }
@@ -103,10 +108,7 @@ void	*routine(void *arg)
 	if (!safe_print(1, philosopher->table, philosopher->id))
 		return (NULL);
 	if (philosopher->id % 2 == 1)
-	{
-		if (!timekeeper(philosopher->time_to_start, philosopher->table))
-			return (NULL);
-	}
+		usleep(philosopher->time_to_start * 1000);
 	while (!check_if_someone_is_dead(philosopher->table))
 	{
 		if (!cycle(philosopher))

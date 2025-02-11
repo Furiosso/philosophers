@@ -19,10 +19,10 @@ static void	*one_philo_run(void *arg)
 	size_t	time_to_die;
 
 	time_to_die = *(size_t *)arg;
-	printf("%s0 1 is thinking%s\n", CYAN, RESET);
-	printf("%s0 1 has taken a fork%s\n", MAGENTA, RESET);
+	printf("%s0 1 is thinking%s\n", CYAN, RSET);
+	printf("%s0 1 has taken a fork%s\n", MAGENTA, RSET);
 	usleep(time_to_die * 1000);
-	printf("%s%zu 1 died%s\n", RED, time_to_die, RESET);
+	printf("%s%zu 1 died%s\n", RED, time_to_die, RSET);
 	return (NULL);
 }
 

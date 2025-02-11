@@ -28,7 +28,10 @@ int	take_forks(t_mutex *firstfork, t_mutex *secondfork, t_philo *philo)
 		return (0);
 	}
 	if (!safe_print(2, philo->table, philo->id))
+	{
+		pthread_mutex_unlock(firstfork);
 		return (0);
+	}
 	pthread_mutex_lock(secondfork);
 	if (check_if_someone_is_dead(philo->table))
 	{
@@ -36,7 +39,10 @@ int	take_forks(t_mutex *firstfork, t_mutex *secondfork, t_philo *philo)
 		return (0);
 	}
 	if (!safe_print(2, philo->table, philo->id))
+	{
+		pthread_mutex_unlock(firstfork);
 		return (0);
+	}
 	return (1);
 }
 
@@ -57,9 +63,12 @@ int	eating(t_philo *philosopher)
 		unlock_forks(philosopher);
 		return (0);
 	}
+	usleep(time_to_eat * 1000);
 	if (!safe_print(3, philosopher->table, philosopher->id))
+	{
+		unlock_forks(philosopher);
 		return (0);
-	usleep (time_to_eat * 1000);
+	}
 	unlock_forks(philosopher);
 	return (1);
 }

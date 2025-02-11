@@ -18,7 +18,7 @@
 # include <unistd.h>
 # include <pthread.h>
 
-# define RESET		"\033[0m"
+# define RSET		"\033[0m"
 # define RED		"\033[31m"
 # define GREEN		"\033[32m"
 # define YELLOW		"\033[33m"
@@ -81,7 +81,7 @@ int			free_stuff(t_table *t, t_philo *ph, pthread_t *th);
 size_t		ft_atol(const char *str);
 void		*ft_calloc(size_t count, size_t size);
 char		ft_isnumber(char *str);
-int			ft_start_mutex(t_mutex mutex, t_mutex *forks, int key);
+int			ft_start_mutex(t_mutex *mutex, t_mutex *forks, int key);
 t_mutex		*ft_start_mutex_array(t_table *table);
 size_t		ft_strlen(const char *str);
 int			ft_print_error(char *str);

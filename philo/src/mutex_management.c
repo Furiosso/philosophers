@@ -86,7 +86,7 @@ t_mutex	*ft_start_mutex_array(t_table *table)
 	i = 0;
 	while (i < table->num_of_philos)
 	{
-		if (!ft_start_mutex(mutex[i], mutex, i))
+		if (!ft_start_mutex(&mutex[i], mutex, i))
 			return (NULL);
 		i++;
 	}
