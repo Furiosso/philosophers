@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:34:08 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/12 18:23:23 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 17:36:58 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,14 +70,14 @@ char	ft_isnumber(char *str)
 		i++;
 	while (ft_isdigit(str[i]))
 		i++;
-	if (str[i] && str[i] != ' ' && !(str[i] < 8 && str[i] > 14))
+	if (str[i] && str[i] != ' ' && !(str[i] > 8 && str[i] < 14))
 	{
 		ft_print_error("Only positive numbers allowed\n");
 		return (0);
 	}
 	while (str[i] == ' ' || (str[i] > 8 && str[i] < 14))
 		i++;
-	if (str[i] && str[i] != ' ' && !(str[i] < 8 && str[i] > 14))
+	if (str[i] && str[i] != ' ' && !(str[i] > 8 && str[i] < 14))
 	{
 		ft_print_error("Only positive numbers allowed\n");
 		return (0);
