@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/08 20:33:16 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/13 00:20:56 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 18:38:58 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,15 @@ long	wait_for_everyone_to_be_ready(t_table *table)
 		pthread_mutex_unlock(&table->start_time_mutex);
 	}
 	pthread_mutex_lock(&table->start_time_mutex);
-	if (!table->start_time)
+	if (!table->start)
 	{
-		table->start_time = get_time();
-		if (!table->start_time)
+		table->start = get_time();
+		if (!table->start)
 		{
 			pthread_mutex_unlock(&table->start_time_mutex);
 			return (0);
 		}
 	}
 	pthread_mutex_unlock(&table->start_time_mutex);
-	return (table->start_time);
+	return (table->start);
 }

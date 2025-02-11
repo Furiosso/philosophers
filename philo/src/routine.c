@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/30 13:28:29 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 18:17:39 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,29 +84,29 @@ void	*routine(void *arg)
 
 int	safe_print(int behaviour, t_table *table, size_t id)
 {
-	long	timer;
+	long	t;
 
 	pthread_mutex_lock(&table->print_mutex);
-	timer = get_time();
-	if (!timer)
+	t = get_time();
+	if (!t)
 	{
 		pthread_mutex_unlock(&table->print_mutex);
 		return (0);
 	}
 	if (behaviour == 0)
-		printf("%s%ld %zu died%s\n", RED, timer - table->start_time, id, RSET);
-	if (behaviour == 1)
-		printf("%s%ld %zu is thinking%s\n",
-			CYAN, timer - table->start_time, id, RSET);
-	if (behaviour == 2)
-		printf("%s%ld %zu has taken a fork%s\n",
-			MAGENTA, timer - table->start_time, id, RSET);
-	if (behaviour == 3)
-		printf("%s%ld %zu is eating%s\n",
-			GREEN, timer - table->start_time, id, RSET);
-	if (behaviour == 4)
-		printf("%s%ld %zu is sleeping%s\n",
-			YELLOW, timer - table->start_time, id, RSET);
+		printf("%s%ld %zu died%s\n", R, t - table->start, id, RS);
+	if (!check_if_someone_is_dead(table))
+	{
+		if (behaviour == 1)
+			printf("%s%ld %zu is thinking%s\n", C, t - table->start, id, RS);
+		if (behaviour == 2)
+			printf("%s%ld %zu has taken a fork%s\n",
+				M, t - table->start, id, RS);
+		if (behaviour == 3)
+			printf("%s%ld %zu is eating%s\n", G, t - table->start, id, RS);
+		if (behaviour == 4)
+			printf("%s%ld %zu is sleeping%s\n", Y, t - table->start, id, RS);
+	}
 	pthread_mutex_unlock(&table->print_mutex);
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:50:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/01/16 22:10:11 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 18:12:36 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,12 @@
 # include <unistd.h>
 # include <pthread.h>
 
-# define RSET		"\033[0m"
-# define RED		"\033[31m"
-# define GREEN		"\033[32m"
-# define YELLOW		"\033[33m"
-# define MAGENTA	"\033[35m"
-# define CYAN		"\033[36m"
+# define RS	"\033[0m"
+# define R	"\033[31m"
+# define G	"\033[32m"
+# define Y	"\033[33m"
+# define M	"\033[35m"
+# define C	"\033[36m"
 
 typedef pthread_mutex_t	t_mutex;
 
@@ -33,7 +33,7 @@ typedef struct s_table
 	size_t		are_done;
 	size_t		everyone_is_ready;
 	size_t		num_of_philos;
-	long		start_time;
+	long		start;
 	long		time_to_die;
 	long		time_to_eat;
 	long		time_to_sleep;
