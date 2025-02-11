@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 18:20:56 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/02/11 18:21:02 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:40:21 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ int	sleeping(t_philo *philosopher)
 		return (0);
 	if (!safe_print(4, philosopher->table, philosopher->id))
 		return (0);
-	if (!timekeeper(time_to_sleep, philosopher->table))
-		return (0);
+	usleep (time_to_sleep * 1000);
 	if (check_if_someone_is_dead(philosopher->table))
 		return (0);
 	return (1);

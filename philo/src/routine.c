@@ -6,7 +6,7 @@
 /*   By: dagimeno <dagimeno@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/04 13:52:21 by dagimeno          #+#    #+#             */
-/*   Updated: 2025/02/11 18:17:39 by dagimeno         ###   ########.fr       */
+/*   Updated: 2025/02/11 19:40:09 by dagimeno         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,7 @@ static int	cycle(t_philo *philosopher)
 	if (!safe_print(1, philosopher->table, philosopher->id))
 		return (0);
 	if (philosopher->table->num_of_philos % 2)
-	{
-		if (!timekeeper (philosopher->time_to_think, philosopher->table))
-			return (0);
-	}
+		usleep(philosopher->time_to_think * 1000);
 	if (check_cycles(philosopher))
 		return (0);
 	return (1);

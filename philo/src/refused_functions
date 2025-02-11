@@ -1,0 +1,23 @@
+
+int	timekeeper(long time, t_table *table)
+{
+	long	start_time;
+	long	timer;
+
+	start_time = get_time();
+	if (start_time < 0)
+		return (0);
+	timer = get_time();
+	if (timer < 0)
+		return (0);
+	while (timer - start_time < time)
+	{
+		if (check_if_someone_is_dead(table))
+			return (0);
+		usleep(20);
+		timer = get_time();
+		if (timer < 0)
+			return (0);
+	}
+	return (1);
+}
