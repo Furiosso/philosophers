@@ -30,16 +30,11 @@ static int	check_cycles(t_philo *philosopher)
 
 static int	cycle(t_philo *philosopher)
 {
-	long	timer;
-
 	if (!take_forks_and_eat(philosopher))
 		return (0);
 	if (check_if_someone_is_dead(philosopher->table))
 		return (0);
 	if (!sleeping(philosopher))
-		return (0);
-	timer = get_time();
-	if (!timer)
 		return (0);
 	if (!safe_print(1, philosopher->table, philosopher->id))
 		return (0);
